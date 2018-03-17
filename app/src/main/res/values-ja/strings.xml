@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Titles -->
+    <string name="minibar">ミニバー</string>
+    <string name="pref_title__about">アプリについて</string>
+
+    <!-- Edit Mode -->
+
+    <!-- Toasts -->
+
+    <string name="toast_free_ram">空きメモリ: %1$d mb 節約 %2$d mb</string>
+    <string name="toast_free_all_ram">空きメモリ: %1$d mb RAM は最高の状態です</string>
+    <string name="toast_device_admin_required">デバイス管理を有効にしてください</string>
+
+    <!-- Intro -->
+
+    <string name="intro_skip">スキップ</string>
+    <string name="intro_finish">始めましょう。</string>
+    <string name="intro1_text">OpenLauncher を選んでいただきありがとうございます。 これは完全にオープンソースで、今も開発中です。
+        これは簡単な使い方の紹介です …</string>
+    <string name="intro2_text">画面の左端から右にスワイプするとミニバーが開きます。 設定や、
+        壁紙の変更、他にも多くのことができます。</string>
+    <string name="intro3_title">設定</string>
+    <string name="intro3_text">デスクトップ、アプリケーションドロワー、ドックを設定することができます … 試してみてください!</string>
+
+    <!-- MiniBar -->
+
+    <string name="minibar_0">ミニバーのレイアウトを変更。</string>
+    <string name="minibar_1">壁紙の設定と、ぼかし。</string>
+    <string name="minibar_2">画面をすぐにロック。 デバイス管理が必要です。</string>
+    <string name="minibar_3">強制的に他の実行中のサービスを閉じて RAM を解放。</string>
+    <string name="minibar_4">デバイス設定のショートカット。</string>
+    <string name="minibar_5">OpenLauncher 設定のショートカット。</string>
+    <string name="minibar_7">ボリュームダイアログを開く。</string>
+    <string name="minibar_8">アプリドロワーを開く。</string>
+
+    <!-- About -->
+
+    <string name="about_libs">オープンソース ライブラリー</string>
+    <string name="about_rate">評価</string>
+    <string name="about_credit">貢献者</string>
+
+    <!-- Dialogs -->
+
+    <string name="dialog__icon_pack_title">アイコンパックの選択</string>
+    <string name="dialog__icon_pack_info_toast">READ_EXTERNAL_STORAGE アクセス許可がないとアイコンを取得できません。</string>
+    <string name="dialog__backup_app_settings__backup">バックアップ</string>
+    <string name="dialog__backup_app_settings__restore">復元</string>
+    <string name="dialog__backup_app_settings__success">完了しました。</string>
+    <string name="dialog__backup_app_settings__error">問題が発生しました。</string>
+
+    <!-- Settings -->
+
+    <string name="pref_title__color">色</string>
+    <string name="pref_title__miscellaneous">その他</string>
+
+    <string name="pref_summary__minibar">ミニバーのアイテムを設定します。</string>
+    <string name="pref_title__size">サイズ</string>
+    <string name="pref_title__search_bar_enable">検索バー</string>
+    <string name="pref_summary__search_bar_enable">デスクトップの上部に検索バーを表示します。</string>
+    <string name="pref_title__desktop_fullscreen">全画面</string>
+    <string name="pref_summary__desktop_fullscreen">デスクトップの全画面を有効にします。</string>
+    <string name="pref_title__desktop_show_position_indicator">デスクトップ インジケーター</string>
+    <string name="pref_summary__desktop_show_position_indicator">デスクトップにページインジケーターを表示します。</string>
+    <string name="pref_title__desktop_show_label">ラベル</string>
+    <string name="pref_summary__desktop_show_label">デスクトップにアプリとフォルダー名を表示します。</string>
+
+    <string name="pref_summary__dock_size">ドックサイズを設定します。</string>
+    <string name="pref_title__dock_show_label">ラベル</string>
+    <string name="pref_summary__dock_show_label">ドックにアプリとフォルダー名を表示します。</string>
+
+    <string name="pref_title__drawer_style">スタイル</string>
+    <string name="pref_summary__drawer_style">アプリドロワーのページと縦表示を選択します。</string>
+    <string name="pref_title__drawer_show_card_view">カード</string>
+    <string name="pref_summary__drawer_show_card_view">ドロワーの背景としてカードを使用します。</string>
+    <string name="pref_title__drawer_remember_position">最後のページを記憶</string>
+    <string name="pref_title__drawer_show_position_indicator">ドロワーのスクロールバー</string>
+    <string name="pref_summary__drawer_show_position_indicator">ドロワーにページインジケーターを表示します。</string>
+
+    <string name="pref_title__gesture_quick_swipe">ドロワーの高速スワイプ</string>
+    <string name="pref_summary__gesture_quick_swipe">ドロワーのアプリアイコンを上にスワイプして、アプリドロワーを開きます。</string>
+
+    <string name="pref_title__dock_background_color">ドック</string>
+    <string name="pref_title__drawer_background_color">ドロワーの背景</string>
+    <string name="pref_title__drawer_card_color">ドロワーカード</string>
+    <string name="pref_title__desktop_folder_color">フォルダー</string>
+    <string name="pref_title__drawer_label_color">ラベル</string>
+
+    <string name="pref_summary__icon_size">すべてのアプリアイコンのサイズ。</string>
+    <string name="pref_title__icon_pack">アイコンパック</string>
+    <string name="pref_summary__icon_pack">インストールしたアイコンパックの選択。</string>
+    <string name="pref_title__hide_apps">アプリの非表示</string>
+    <string name="pref_summary__hide_apps">ランチャーから選択したアプリを非表示にします。</string>
+
+    <string name="pref_title__backup">バックアップ</string>
+    <string name="pref_summary__backup">設定をバックアップおよび復元します。</string>
+    <string name="pref_title__restart">再起動</string>
+    <string name="pref_summary__restart">動作がおかしい場合に、ランチャーを再起動します。</string>
+
+    <!-- Other -->
+
+    <string name="request_dummy_text">Hello world!</string>
+    <string name="request_please_wait">インストールされたアプリを検索中。しばらくお待ちください。</string>
+    <string name="request_toast">アプリが選択されていません。 ドロワーにすべてのアプリを表示しますか?</string>
+    <string name="on">オン</string>
+    <string name="off">オフ</string>
+    <string name="ok">OK</string>
+    <string name="wallpaper">壁紙</string>
+    <string name="wallpaper_pick">壁紙の選択</string>
+    <string name="wallpaper_unable_to_blur">ぼかすことができません</string>
+
+</resources>
