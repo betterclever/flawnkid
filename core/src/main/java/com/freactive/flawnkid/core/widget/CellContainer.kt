@@ -9,13 +9,14 @@ import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import com.freactive.flawnkid.core.activity.CoreHome
 import com.freactive.flawnkid.core.util.Tool
 import com.freactive.flawnkid.core.util.toPx
 import java.util.*
 
-open class CellContainer : ViewGroup {
+open class CellContainer : ViewGroup{
     private val mPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val bgPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val outlinePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)

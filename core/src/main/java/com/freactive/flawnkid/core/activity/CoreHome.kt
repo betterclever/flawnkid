@@ -146,7 +146,7 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
     fun onRemoveItem(item: Item) {
         when (item.locationInLauncher) {
             Item.LOCATION_DESKTOP -> {
-                desktop.removeItem(desktop.currentPage.coordinateToChildView(Point(item.x, item.y))!!, true)
+                desktop.removeItem((desktop.currentPage as? CellContainer)?.coordinateToChildView(Point(item.x, item.y))!!, true)
             }
             Item.LOCATION_DOCK -> {
                 dock.removeItem(dock.coordinateToChildView(Point(item.x, item.y))!!, true)
@@ -173,7 +173,7 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
 
             when (item.locationInLauncher) {
                 Item.LOCATION_DESKTOP -> {
-                    desktop.removeItem(desktop.currentPage.coordinateToChildView(Point(item.x, item.y))!!, false)
+                    desktop.removeItem((desktop.currentPage as? CellContainer)?.coordinateToChildView(Point(item.x, item.y))!!, false)
                     desktop.addItemToCell(item, item.x, item.y)
                 }
                 Item.LOCATION_DOCK -> {
@@ -315,13 +315,20 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
 
             if ((x + 200.toPx()) > dragNDropView.width) {
                 dragNDropView.setPopupMenuShowDirection(false)
-                x = dragNDropView.dragLocation.x - CoreHome.itemTouchX + desktop.currentPage.cellWidth - 200.toPx().toFloat() - 10.toPx()
+                if (desktop.currentPage is OverviewPage) return
+                (desktop.currentPage as CellContainer).apply {
+                    x = dragNDropView.dragLocation.x - CoreHome.itemTouchX + this.cellWidth - 200.toPx().toFloat() - 10.toPx()
+                }
             } else {
                 dragNDropView.setPopupMenuShowDirection(true)
             }
 
-            if (y < 0)
-                y = dragNDropView.dragLocation.y - CoreHome.itemTouchY + desktop.currentPage.cellHeight + 4.toPx()
+            if (y < 0) {
+                if (desktop.currentPage is OverviewPage) return
+                (desktop.currentPage as CellContainer).apply {
+                    y = dragNDropView.dragLocation.y - CoreHome.itemTouchY + this.cellHeight + 4.toPx()
+                }
+            }
             else
                 y -= 4.toPx()
 
@@ -347,7 +354,7 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
 
             override fun onExit(action: DragAction.Action, location: PointF) {
                 for (page in desktop.pages)
-                    page.clearCachedOutlineBitmap()
+                    (page as? CellContainer)?.clearCachedOutlineBitmap()
                 dragNDropView.cancelFolderPreview()
             }
 
@@ -368,8 +375,8 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
                     CoreHome.db.saveItem(item, desktop.currentItem, Definitions.ItemPosition.Desktop)
                 } else {
                     val pos = Point()
-                    desktop.currentPage.touchPosToCoordinate(pos, x, y, item.spanX, item.spanY, false)
-                    val itemView = desktop.currentPage.coordinateToChildView(pos)
+                    (desktop.currentPage as? CellContainer)?.touchPosToCoordinate(pos, x, y, item.spanX, item.spanY, false)
+                    val itemView = (desktop.currentPage as? CellContainer)?.coordinateToChildView(pos)
                     if (itemView != null && Desktop.handleOnDropOver(this@CoreHome, item, itemView.tag as Item, itemView, desktop.currentPage, desktop.currentItem, Definitions.ItemPosition.Desktop, desktop)) {
                         desktop.consumeRevert()
                         dock.consumeRevert()
@@ -388,7 +395,7 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
             override fun onEnd() {
                 CoreHome.launcher?.getDesktopIndicator()?.hideDelay()
                 for (page in desktop.pages)
-                    page.clearCachedOutlineBitmap()
+                    (page as? CellContainer)?.clearCachedOutlineBitmap()
             }
 
             override fun onMove(action: DragAction.Action, location: PointF) {
@@ -544,7 +551,6 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
     }
 
 
-
     @JvmOverloads
     open fun onStartApp(context: Context, intent: Intent, view: View? = null) = try {
         context.startActivity(intent, getActivityAnimationOpts(view))
@@ -560,7 +566,7 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.setClassName(app.packageName, app.className)
 
-        Timer("",false).schedule(5000) {
+        Timer("", false).schedule(5000) {
             val i = Intent(Intent.ACTION_MAIN)
             i.addCategory(Intent.CATEGORY_HOME)
             startActivity(i)
@@ -644,7 +650,7 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
 
     override fun onPickDesktopAction() {
         Setup.eventHandler().showPickAction(this, DialogListener.OnAddAppDrawerItemListener {
-            val pos = desktop!!.currentPage.findFreeSpace()
+            val pos = (desktop!!.currentPage as? CellContainer)?.findFreeSpace()
             if (pos != null)
                 desktop!!.addItemToCell(Item.newActionItem(Definitions.ACTION_LAUNCHER), pos.x, pos.y)
             else
@@ -862,23 +868,31 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
     }
 
     private fun createWidget(data: Intent?) {
+
+
         val extras = data!!.extras
         val appWidgetId = extras!!.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
         val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
         val item = Item.newWidgetItem(appWidgetId)
-        item.spanX = (appWidgetInfo.minWidth - 1) / desktop!!.pages[CoreHome.launcher!!.desktop!!.currentItem].cellWidth + 1
-        item.spanY = (appWidgetInfo.minHeight - 1) / desktop!!.pages[CoreHome.launcher!!.desktop!!.currentItem].cellHeight + 1
-        val point = desktop!!.currentPage.findFreeSpace(item.spanX, item.spanY)
-        if (point != null) {
-            item.x = point.x
-            item.y = point.y
 
-            // add item to database
-            db.saveItem(item, desktop!!.currentItem, Definitions.ItemPosition.Desktop)
-            desktop!!.addItemToPage(item, desktop!!.currentItem)
-        } else {
-            Tool.toast(this@CoreHome, R.string.toast_not_enough_space)
+        val page = desktop!!.pages[CoreHome.launcher!!.desktop!!.currentItem]
+        if (page is OverviewPage) return
+        (page as CellContainer).apply {
+            item.spanX = (appWidgetInfo.minWidth - 1) / this.cellWidth + 1
+            item.spanY = (appWidgetInfo.minHeight - 1) / this.cellHeight + 1
+            val point = (desktop.currentPage as? CellContainer)?.findFreeSpace(item.spanX, item.spanY)
+            if (point != null) {
+                item.x = point.x
+                item.y = point.y
+
+                // add item to database
+                db.saveItem(item, desktop!!.currentItem, Definitions.ItemPosition.Desktop)
+                desktop!!.addItemToPage(item, desktop!!.currentItem)
+            } else {
+                Tool.toast(this@CoreHome, R.string.toast_not_enough_space)
+            }
         }
+
     }
 
     override fun onDestroy() {

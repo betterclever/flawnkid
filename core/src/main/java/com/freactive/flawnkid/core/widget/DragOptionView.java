@@ -97,7 +97,11 @@ public class DragOptionView extends CardView {
                                 CoreHome.Companion.getDb().saveItem(item);
 
                                 CoreHome.Companion.getLauncher().getDesktop().addItemToCell(item, item.getX(), item.getY());
-                                CoreHome.Companion.getLauncher().getDesktop().removeItem(CoreHome.Companion.getLauncher().getDesktop().getCurrentPage().coordinateToChildView(new Point(item.getX(), item.getY())), false);
+
+                                if (CoreHome.Companion.getLauncher().getDesktop().getCurrentPage() instanceof CellContainer) {
+                                    CellContainer c = (CellContainer) CoreHome.Companion.getLauncher().getDesktop().getCurrentPage();
+                                    CoreHome.Companion.getLauncher().getDesktop().removeItem(c.coordinateToChildView(new Point(item.getX(), item.getY())), false);
+                                }
                             }
                         });
                         return true;
@@ -252,8 +256,11 @@ public class DragOptionView extends CardView {
                 animShowView();
                 boolean desktopHideGrid = Setup.Companion.appSettings().isDesktopHideGrid();
                 home.getDock().setHideGrid(desktopHideGrid);
-                for (CellContainer cellContainer : home.getDesktop().getPages()) {
-                    cellContainer.setHideGrid(desktopHideGrid);
+
+                for (ViewGroup viewGroup : home.getDesktop().getPages()) {
+                    if(viewGroup instanceof CellContainer) {
+                        ((CellContainer) viewGroup).setHideGrid(desktopHideGrid);
+                    }
                 }
                 switch (((DragAction) event.getLocalState()).action) {
                     case ACTION:
@@ -290,8 +297,11 @@ public class DragOptionView extends CardView {
             case DragEvent.ACTION_DRAG_ENDED:
                 dragging = false;
                 home.getDock().setHideGrid(true);
-                for (CellContainer cellContainer : home.getDesktop().getPages()) {
-                    cellContainer.setHideGrid(true);
+
+                for (ViewGroup viewGroup : home.getDesktop().getPages()) {
+                    if(viewGroup instanceof CellContainer) {
+                        ((CellContainer) viewGroup).setHideGrid(true);
+                    }
                 }
 
                 animate().alpha(0);

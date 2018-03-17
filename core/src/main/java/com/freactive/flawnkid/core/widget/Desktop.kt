@@ -6,11 +6,10 @@ import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowInsets
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.LinearLayout
+import com.freactive.flawnkid.core.R
 import com.freactive.flawnkid.core.activity.CoreHome
 import com.freactive.flawnkid.core.manager.Setup
 import com.freactive.flawnkid.core.model.Item
@@ -21,9 +20,33 @@ import com.freactive.flawnkid.core.viewutil.ItemViewFactory
 import com.freactive.flawnkid.core.viewutil.SmoothPagerAdapter
 import java.util.*
 
+class OverviewPage(context: Context) : LinearLayout(context) {
+
+    init {
+        val view = LayoutInflater.from(context).inflate(R.layout.item_sample, this, false) as LinearLayout
+        view.layoutParams = LayoutParams(200,200)
+        view.getLocationOnScreen(intArrayOf(0,0))
+        view.orientation = LinearLayout.VERTICAL
+        addView(view)
+        invalidate()
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        val  count = childCount
+
+        for (i in 0 until count) {
+            val child = getChildAt(i)
+            if (child.visibility != GONE) {
+                child.layout(left,top,right,bottom)
+            }
+        }
+    }
+}
+
+
 class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) : SmoothViewPager(c, attr), DesktopCallBack<View> {
 
-    val pages: MutableList<CellContainer> = ArrayList<CellContainer>()
+    val pages: MutableList<ViewGroup> = ArrayList()
     var desktopEditListener: OnDesktopEditListener? = null
     var previousItemView: View? = null
     var previousItem: Item? = null
@@ -38,7 +61,7 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
     val isCurrentPageEmpty: Boolean
         get() = currentPage.childCount == 0
 
-    val currentPage: CellContainer
+    val currentPage: ViewGroup
         get() = pages[currentItem]
 
     fun setPageIndicator(pageIndicator: PagerIndicator) {
@@ -80,8 +103,8 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
             }
         }
 
-        if(pageCount == 1) {
-            addPageLeft(true)
+        if (pageCount == 1) {
+            addOverviewPage(true)
             addPageRight(true)
         }
     }
@@ -135,7 +158,7 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
 
         if (!Setup.appSettings().isDesktopHideGrid)
             for (cellContainer in pages) {
-                cellContainer.setHideGrid(!showGrid)
+                (cellContainer as? CellContainer)?.setHideGrid(!showGrid)
             }
         pageIndicator!!.invalidate()
     }
@@ -150,7 +173,22 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
 
         if (!Setup.appSettings().isDesktopHideGrid)
             for (cellContainer in pages) {
-                cellContainer.setHideGrid(!showGrid)
+                (cellContainer as? CellContainer)?.setHideGrid(!showGrid)
+            }
+        pageIndicator!!.invalidate()
+    }
+
+    fun addOverviewPage(showGrid: Boolean) {
+        pageCount++
+
+        val previousPage = currentItem
+        (adapter as DesktopAdapter).addOverviewPage()
+        setCurrentItem(previousPage + 1, false)
+        currentItem = previousPage - 1
+
+        if (!Setup.appSettings().isDesktopHideGrid)
+            for (cellContainer in pages) {
+                (cellContainer as? CellContainer)?.setHideGrid(!showGrid)
             }
         pageIndicator!!.invalidate()
     }
@@ -169,7 +207,7 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
             v.animate().alpha(1f)
             v.scaleX = 0.85f
             v.scaleY = 0.85f
-            v.animateBackgroundShow()
+            (v as? CellContainer)?.animateBackgroundShow()
         }
 
         if (pageCount == 0) {
@@ -184,33 +222,42 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
     private val previousDragPoint = Point()
 
     fun updateIconProjection(x: Int, y: Int) {
-        val state = currentPage.peekItemAndSwap(x, y, coordinate)
 
-        if (previousDragPoint != coordinate)
-            CoreHome.launcher?.getDragNDropView()?.cancelFolderPreview()
-        previousDragPoint.set(coordinate.x, coordinate.y)
+        when (currentPage) {
+            is CellContainer -> {
 
-        when (state) {
-            CellContainer.DragState.CurrentNotOccupied -> currentPage.projectImageOutlineAt(coordinate, DragNDropHandler.cachedDragBitmap)
-            CellContainer.DragState.OutOffRange -> {
+                val currentPage = this.currentPage as CellContainer
+                val state = currentPage.peekItemAndSwap(x, y, coordinate)
 
-            }
-            CellContainer.DragState.ItemViewNotFound -> {
-            }
-            CellContainer.DragState.CurrentOccupied -> {
-                for (page in pages)
-                    page.clearCachedOutlineBitmap()
+                if (previousDragPoint != coordinate)
+                    CoreHome.launcher?.getDragNDropView()?.cancelFolderPreview()
+                previousDragPoint.set(coordinate.x, coordinate.y)
 
-                val action = CoreHome.launcher?.getDragNDropView()?.dragAction
-                if (action != DragAction.Action.WIDGET && action != DragAction.Action.ACTION &&
-                        currentPage.coordinateToChildView(coordinate) is AppItemView)
-                    CoreHome.launcher?.getDragNDropView()?.showFolderPreviewAt(
-                            this,
-                            currentPage.cellWidth * (coordinate.x + 0.5f),
-                            currentPage.cellHeight * (coordinate.y + 0.5f) - if (Setup.appSettings().isDesktopShowLabel) 7.toPx() else 0
-                    )
+                when (state) {
+                    CellContainer.DragState.CurrentNotOccupied -> currentPage.projectImageOutlineAt(coordinate, DragNDropHandler.cachedDragBitmap)
+                    CellContainer.DragState.OutOffRange -> {
+
+                    }
+                    CellContainer.DragState.ItemViewNotFound -> {
+                    }
+                    CellContainer.DragState.CurrentOccupied -> {
+                        for (page in pages)
+                            if (page is CellContainer) {
+                                page.clearCachedOutlineBitmap()
+                            }
+                        val action = CoreHome.launcher?.getDragNDropView()?.dragAction
+                        if (action != DragAction.Action.WIDGET && action != DragAction.Action.ACTION &&
+                                currentPage.coordinateToChildView(coordinate) is AppItemView)
+                            CoreHome.launcher?.getDragNDropView()?.showFolderPreviewAt(
+                                    this,
+                                    currentPage.cellWidth * (coordinate.x + 0.5f),
+                                    currentPage.cellHeight * (coordinate.y + 0.5f) - if (Setup.appSettings().isDesktopShowLabel) 7.toPx() else 0
+                            )
+                    }
+                }
             }
         }
+
     }
 
     override fun setLastItem(vararg args: Any) {
@@ -226,7 +273,9 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
 
     override fun revertLastItem() {
         if (previousItemView != null && adapter.count >= previousPage && previousPage > -1) {
-            pages[previousPage].addViewToGrid(previousItemView!!)
+
+            if (pages[previousPage] is CellContainer) (pages[previousPage] as CellContainer)
+                    .addViewToGrid(previousItemView!!)
             previousItem = null
             previousItemView = null
             previousPage = -1
@@ -247,29 +296,33 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
             return false
         } else {
             item.locationInLauncher = Item.LOCATION_DESKTOP
-            pages[page].addViewToGrid(itemView, item.x, item.y, item.spanX, item.spanY)
+
+            if (pages[page] is CellContainer)
+                (pages[page] as CellContainer).addViewToGrid(itemView, item.x, item.y, item.spanX, item.spanY)
             return true
         }
     }
 
     override fun addItemToPoint(item: Item, x: Int, y: Int): Boolean {
-        val positionToLayoutPrams = currentPage.coordinateToLayoutParams(x, y, item.spanX, item.spanY)
-        if (positionToLayoutPrams != null) {
-            item.locationInLauncher = Item.LOCATION_DESKTOP
+        if (currentPage is CellContainer) {
+            val positionToLayoutPrams = (currentPage as CellContainer).coordinateToLayoutParams(x, y, item.spanX, item.spanY)
+            if (positionToLayoutPrams != null) {
+                item.locationInLauncher = Item.LOCATION_DESKTOP
 
-            item.x = positionToLayoutPrams.x
-            item.y = positionToLayoutPrams.y
+                item.x = positionToLayoutPrams.x
+                item.y = positionToLayoutPrams.y
 
-            val itemView = ItemViewFactory.getItemView(context, item, Setup.appSettings().isDesktopShowLabel, this, Setup.appSettings().desktopIconSize)
+                val itemView = ItemViewFactory.getItemView(context, item, Setup.appSettings().isDesktopShowLabel, this, Setup.appSettings().desktopIconSize)
 
-            if (itemView != null) {
-                itemView.layoutParams = positionToLayoutPrams
-                currentPage.addView(itemView)
+                if (itemView != null) {
+                    itemView.layoutParams = positionToLayoutPrams
+                    currentPage.addView(itemView)
+                }
+                return true
+            } else {
+                return false
             }
-            return true
-        } else {
-            return false
-        }
+        } else return false
     }
 
     override fun addItemToCell(item: Item, x: Int, y: Int): Boolean {
@@ -281,7 +334,8 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
         val itemView = ItemViewFactory.getItemView(context, item, Setup.appSettings().isDesktopShowLabel, this, Setup.appSettings().desktopIconSize)
 
         return if (itemView != null) {
-            currentPage.addViewToGrid(itemView, item.x, item.y, item.spanX, item.spanY)
+            if (currentPage is CellContainer)
+                (currentPage as CellContainer).addViewToGrid(itemView, item.x, item.y, item.spanX, item.spanY)
             true
         } else {
             false
@@ -371,7 +425,8 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
                 layout.gestures = mySfg
                 layout.onItemRearrangeListener = object : CellContainer.OnItemRearrangeListener {
                     override fun onItemRearrange(from: Point, to: Point) {
-                        val itemFromCoordinate = Desktop.getItemFromCoordinate(from, currentItem) ?: return
+                        val itemFromCoordinate = Desktop.getItemFromCoordinate(from, currentItem)
+                                ?: return
                         itemFromCoordinate.x = to.x
                         itemFromCoordinate.y = to.y
                     }
@@ -397,9 +452,23 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
 
         init {
             desktop.pages.clear()
+/*
+
+            val demoItem = CellContainer(desktop.context)
+            demoItem.addView(View.inflate(desktop.context, R.layout.item_sample, ))
+            desktop.pages.add(0, demoItem)
+*/
+
             for (i in 0 until count) {
                 desktop.pages.add(itemLayout)
             }
+        }
+
+        fun addOverviewPage() {
+            desktop.pages.add(0, OverviewPage(
+                    context
+            ))
+            notifyDataSetChanged()
         }
 
         fun addPageLeft() {
@@ -414,11 +483,13 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
 
         fun removePage(position: Int, deleteItems: Boolean) {
             if (deleteItems) {
-                val views = desktop.pages[position].allCells
-                for (v in views) {
-                    val item = v.tag
-                    if (item is Item) {
-                        CoreHome.db.deleteItem(item, true)
+                if (desktop.pages[position] is CellContainer) {
+                    val views = (desktop.pages[position] as CellContainer).allCells
+                    for (v in views) {
+                        val item = v.tag
+                        if (item is Item) {
+                            CoreHome.db.deleteItem(item, true)
+                        }
                     }
                 }
             }
@@ -452,8 +523,10 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
             scaleFactor = 0.8f
             translateFactor = (if (Setup.appSettings().searchBarEnable) 20 else 40).toPx().toFloat()
             for (v in desktop.pages) {
-                v.blockTouch = true
-                v.animateBackgroundShow()
+                if (v is CellContainer) {
+                    v.blockTouch = true
+                    v.animateBackgroundShow()
+                }
                 v.animate().scaleX(scaleFactor).scaleY(scaleFactor).translationY(translateFactor).interpolator = AccelerateDecelerateInterpolator()
             }
             desktop.inEditMode = true
@@ -466,8 +539,12 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
             scaleFactor = 1.0f
             translateFactor = 0f
             for (v in desktop.pages) {
-                v.blockTouch = false
-                v.animateBackgroundHide()
+
+                if (v is CellContainer) {
+                    v.blockTouch = false
+                    v.animateBackgroundHide()
+                }
+
                 v.animate().scaleX(scaleFactor).scaleY(scaleFactor).translationY(translateFactor).interpolator = AccelerateDecelerateInterpolator()
             }
             desktop.inEditMode = false
