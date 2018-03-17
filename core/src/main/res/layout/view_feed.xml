@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="10dp"
+            android:background="#ffffff">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:text="Name"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="App Usage"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="30dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:text="Educational Apps"
+                android:layout_marginTop="65dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:text="General Apps"
+                android:layout_marginTop="65dp"/>
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:progress="25"
+                android:scaleY="8"
+                android:layout_marginTop="85dp"
+                android:progressTint="#b50a0a"
+                android:progressBackgroundTint="#b50a0a"
+                style="?android:attr/progressBarStyleHorizontal" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Points"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:layout_marginTop="115dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:text="Educational Apps"
+                android:layout_marginTop="173dp"/>
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:progress="25"
+                android:scaleY="8"
+                android:progressTint="#0f9900"
+                android:progressBackgroundTint="#0f9900"
+                android:layout_marginTop="138dp"
+                style="?android:attr/progressBarStyleHorizontal" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:text="General Apps"
+                android:layout_marginTop="228dp"/>
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:progress="25"
+                android:progressTint="#b50a0a"
+                android:progressBackgroundTint="#b50a0a"
+                android:scaleY="8"
+                android:layout_marginTop="193dp"
+                style="?android:attr/progressBarStyleHorizontal" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="251dp"
+                android:progress="25"
+                android:progressBackgroundTint="#0f9900"
+                android:progressTint="#0f9900"
+                android:scaleY="8" />
+
+
+        </android.support.v7.widget.CardView>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
