@@ -53,7 +53,6 @@ contract GameContest {
     GameIdea idea = gameIdeas[gameIdeaID];
     Submission s = idea.submissions[submissionID];
     
-
     for (uint index = 0; index < idea.numStakeHolders; index++) {
       StakeHolder st = idea.stakeHolders[index];
       if(st.addr == msg.sender) {
@@ -72,7 +71,6 @@ contract GameContest {
     }
 
     return false;
-
   }
   
   function addStake(uint gameIdeaID) {
