@@ -60,28 +60,25 @@ class AppsListActivity : Activity() {
                 }
 
                 val appIcon = convertView!!.findViewById(R.id.item_app_icon) as ImageView
-                appIcon.setImageDrawable(apps.get(position).icon)
+                appIcon.setImageDrawable(apps[position].icon)
 
-                val appLabel = convertView!!.findViewById(R.id.item_app_label) as TextView
-                appLabel.setText(apps.get(position).label)
+                //val appLabel = convertView!!.findViewById(R.id.item_app_label) as TextView
+                //appLabel.setText(apps.get(position).label)
 
-                val appName = convertView!!.findViewById(R.id.item_app_name) as TextView
-                appName.setText(apps.get(position).name)
+                val appName = convertView.findViewById(R.id.item_app_name) as TextView
+                appName.text = apps[position].name
 
                 return convertView
             }
         }
 
-        apps_list.setAdapter(adapter)
+        apps_list.adapter = adapter
     }
 
     private fun addClickListener() {
-        apps_list.setOnItemClickListener(object : AdapterView.OnItemClickListener {
-            override fun onItemClick(av: AdapterView<*>, v: View, pos: Int,
-                                     id: Long) {
-                val i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString())
-                this@AppsListActivity.startActivity(i)
-            }
-        })
+        apps_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, pos, _ ->
+            val i = manager.getLaunchIntentForPackage(apps[pos].name.toString())
+            this@AppsListActivity.startActivity(i)
+        }
     }
 }

@@ -66,35 +66,31 @@ class AppListFragment: Fragment() {
                 }
 
                 val appIcon = convertView!!.findViewById(R.id.item_app_icon) as ImageView
-                appIcon.setImageDrawable(apps.get(position).icon)
+                appIcon.setImageDrawable(apps[position].icon)
 
                 val appLabel = convertView.findViewById(R.id.item_app_label) as TextView
-                appLabel.setText(apps.get(position).label)
+                appLabel.text = apps[position].label
 
-                val appName = convertView.findViewById(R.id.item_app_name) as TextView
-                appName.setText(apps.get(position).name)
+                //val appName = convertView.findViewById(R.id.item_app_name) as TextView
+                //appName.text = apps[position].name
 
                 return convertView
             }
         }
 
-        apps_list.setAdapter(adapter)
+        apps_list.adapter = adapter
     }
 
     private fun addClickListener() {
-        apps_list.setOnItemClickListener(object : AdapterView.OnItemClickListener {
-            override fun onItemClick(av: AdapterView<*>, v: View, pos: Int,
-                                     id: Long) {
+        apps_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, pos, _ ->
+            val i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString())
+            activity.startActivityForResult(i,100)
 
-                val i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString())
-                activity.startActivityForResult(i,100)
-
-                Timer("",false).schedule(5000) {
-                    val i = Intent(Intent.ACTION_MAIN)
-                    i.addCategory(Intent.CATEGORY_HOME)
-                    startActivity(i)
-                }
+            Timer("",false).schedule(5000) {
+                val i = Intent(Intent.ACTION_MAIN)
+                i.addCategory(Intent.CATEGORY_HOME)
+                startActivity(i)
             }
-        })
+        }
     }
 }
