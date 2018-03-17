@@ -13,6 +13,8 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_apps_list.*
+import java.util.*
+import kotlin.concurrent.schedule
 
 /**
  * Created by akshat on 17/3/18.
@@ -83,8 +85,15 @@ class AppListFragment: Fragment() {
         apps_list.setOnItemClickListener(object : AdapterView.OnItemClickListener {
             override fun onItemClick(av: AdapterView<*>, v: View, pos: Int,
                                      id: Long) {
+
                 val i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString())
-                activity.startActivity(i)
+                activity.startActivityForResult(i,100)
+
+                Timer("",false).schedule(5000) {
+                    val i = Intent(Intent.ACTION_MAIN)
+                    i.addCategory(Intent.CATEGORY_HOME)
+                    startActivity(i)
+                }
             }
         })
     }

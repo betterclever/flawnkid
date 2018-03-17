@@ -12,10 +12,8 @@
         <activity
             android:name=".HomeActivity"
             android:clearTaskOnLaunch="true"
-            android:label="Simple Launcher Home"
-            android:launchMode="singleTask"
-            android:stateNotNeeded="true"
-            android:theme="@android:style/Theme.Wallpaper.NoTitleBar.Fullscreen">
+            android:label="Flawnkid"
+            android:stateNotNeeded="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,8 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AppsListActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+        <activity android:name=".AppsListActivity"/>
     </application>
 
 </manifest>
