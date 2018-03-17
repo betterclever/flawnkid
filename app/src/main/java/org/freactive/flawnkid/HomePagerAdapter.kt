@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentStatePagerAdapter
 
 class HomePagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm) {
     override fun getItem(position: Int): Fragment {
+        if(position == 0) return FeedsFragment()
         return AppListFragment()
     }
 
