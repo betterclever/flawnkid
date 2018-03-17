@@ -79,6 +79,11 @@ class Desktop @JvmOverloads constructor(c: Context, attr: AttributeSet? = null) 
                 }
             }
         }
+
+        if(pageCount == 1) {
+            addPageLeft(true)
+            addPageRight(true)
+        }
     }
 
     fun initDesktopShowAll(c: Context, home: CoreHome) {
