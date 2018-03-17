@@ -42,10 +42,13 @@ contract GameContest {
     returns (uint submissionID) 
   {
     GameIdea idea = gameIdeas[gameIdeaID];
-    idea.submissions[idea.numSubmissions++] = Submission(
+    submissionID = idea.numSubmissions++;
+    idea.submissions[submissionID] = Submission(
        msg.sender, previewLink,  0
     );
   }
+
+  
   
   function addStake(uint gameIdeaID) {
     GameIdea c = gameIdeas[gameIdeaID];
