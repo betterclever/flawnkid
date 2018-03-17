@@ -8,12 +8,20 @@ contract GameContest {
     uint amount;
   }
 
+  struct Submission {
+    address addr;
+    string previewLink;
+    uint votes;
+  }
+
   struct GameIdea {
     string topic;
     string description;
     uint numStakeHolders;
+    uint numSubmissions;
     uint amount;
     mapping (uint => StakeHolder) stakeHolders;
+    mapping (uint => Submission) submissions;
   }
   
   uint numGameIdeas;
@@ -24,10 +32,19 @@ contract GameContest {
                       ) returns (uint gameIdeaID) 
   {
     gameIdeaID = numGameIdeas++; 
-    gameIdeas[gameIdeaID] = GameIdea(topic, description, 0, 0);
+    gameIdeas[gameIdeaID] = GameIdea(topic, description, 0, 0, 0);
     GameIdea g = gameIdeas[gameIdeaID];
     g.stakeHolders[g.numStakeHolders++] = StakeHolder({addr: msg.sender, amount: msg.value});
     g.amount += msg.value;
+  }
+
+  function addSubmission(uint gameIdeaID, string previewLink)
+    returns (uint submissionID) 
+  {
+    GameIdea idea = gameIdeas[gameIdeaID];
+    idea.submissions[idea.numSubmissions++] = Submission(
+       msg.sender, previewLink,  0
+    );
   }
   
   function addStake(uint gameIdeaID) {
