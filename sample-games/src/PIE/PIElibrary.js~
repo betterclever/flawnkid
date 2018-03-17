@@ -1,0 +1,2368 @@
+/* Document handles */
+var PIEcontrolElem;    // Controls element of the document where all UI controls will be added
+var PIEtitleElem;      // Title of the experiment - a document element
+var PIEsourceElem;     // Source of the experiment - a document element
+var PIEdeveloperElem;  // Developer of the experiment - a document element
+var PIEdesignerElem;   // Designer of the Responsive GUI - a document element
+var PIEscreenElem;     // Canvas element of the document to display experiment
+var PIEspeedElem;      // Document element to show animation speed
+var PIEresetButton;    // Button element to start animation
+var PIEstartButton;    // Button element to start animation
+var PIEstopButton;     // Button element to stop animation
+var PIEpauseButton;    // Button element to pause animation
+var PIEresumeButton;   // Button element to resume animation
+var PIEslowdownButton; // Button element to slowdown animation
+var PIEspeedupButton;  // Button element to slowdown animation
+var PIEhelpButton;     // Button element to show help in experiment
+var PIEinfoButton;     // Button element to show information on concept
+
+var PIEhelpModal;      // Document element to show help modal window
+var PIEhelpContent;    // Document element to show help content
+var PIEhelpSpan;       // Document element to show help close
+var PIEinfoModal;      // Document element to show info modal window
+var PIEinfoContent;    // Document element to show info content
+var PIEinfoSpan;       // Document element to show info close
+
+/* Dimension variables */
+var PIEcanvasW;        // Width  in pixels of the canvas element
+var PIEcanvasH;        // Height in pixels of the canvas element
+var PIEcanvasAspect;   // Aspect ratio of the canvas element
+var PIEaoiTLX;         // Top left X coordinate of scene (area of interest)
+var PIEaoiTLY;         // Top left Y coordinate of scene (area of interest)
+var PIEaoiBRX;         // Bottom right X coordinate of scene (area of interest)
+var PIEaoiBRY;         // Bottom right Y coordinate of scene (area of interest)
+var PIEaoiW;           // Width  of scene (area of interest)
+var PIEaoiH;           // Height of scene (area of interest)
+var PIEaoiAspect;      // Aspect ratio of scene (area of interest)
+var PIEdislayTLX;      // Top left X coordinate of displayed scene (more area is displayed to match aspect of display)
+var PIEdislayTLY;      // Top left Y coordinate of displayed scene (more area is displayed to match aspect of display)
+var PIEdislayBRX;      // Bottom right X coordinate of displayed scene (more area is displayed to match aspect of display)
+var PIEdislayBRY;      // Bottom right Y coordinate of displayed scene (more area is displayed to match aspect of display)
+var PIEdisplayW;       // Width  of displayed scene
+var PIEdisplayH;       // Height of displayed scene
+var PIEdisplayAspect;  // Aspect ratio of dispayed scene (same as PIE canvas aspect ratio)
+
+/* Scene handles */
+var PIEscene;          // Scene
+var PIEcamera;         // Camera
+var PIEcameraAngle;    // Camera angle (Field of Vision) : to adjust height of visible scene
+var PIEcameraAspect;   // Camera Aspect : to adjust width of visible scene
+var PIEcameraZ;        // Camera Z position
+var PIEcameraTarget;   // Camera target : where camera points in 3D space
+var PIErenderer;       // Renderer
+var PIEambientLight;   // Default light - no shadow
+var PIEspotLight;      // Default light - shadow
+var PIEraycaster;      // Default raycaster
+
+/* Other handles */
+var PIEsceneElements=[]; // Scene Elements
+
+/* Drag Variables */
+var PIEdragElements=[];// Draggable Elements
+var PIEselectedDrag;   // Element selected for drag
+var PIEselectedHover;  // Element over which mouse hovers (for highlighting if required)
+var PIEdragPlane;      // Invisible plane to find drag offset
+var PIEmouseP;         // 2D mouse position (normalised -1 to 1) in pixels
+var PIEdragOffset;     // 3D offset for drag displacement
+var PIEdragIntersect;  // 3D inersection  of drag ray with plane
+
+/* Animation Variables */
+var PIElastUpdateTime;  /* The start of the current animation cycle */
+var PIEpauseOffset;     /* The start of the current animation cycle */
+var PIEcurrentTime;     /* The current value of animation time (t) since start of cycle */
+var PIEoffsetTime;      /* The time since last call (dt) to user supplied update code */
+var PIEanimationON;     /* Flag to indicate that animation is running */
+var PIEanimationPaused; /* Flag to indicate that animation is paused */
+var PIEanimationSpeed;  /* The current animation speed (default 1.0) */
+var PIEminAnimationSpeed;/* The minimum animation speed (= 0.125) */
+var PIEmaxAnimationSpeed;/* The maximum animation speed (= 4.0) */
+
+/* GUI Data */
+/* Where all the data elements manipulated by PIE dat.gui are stored */
+/* The library support 20 elements of each type of gui (input text, slider, button, checkbox) */
+/* The Input GUI panel */
+var PIEinputGUI;            /* The actual input dat.gui instance */
+var PIEinputObject;         /* The object where all the input panel data elements are stored */
+var PIEitInput;             /* Number of Texts created */
+var PIEsInput;              /* Number of Sliders created */
+var PIEcbInput;             /* Number of Check boxes created */
+var PIEcInput;              /* Number of Commands created */
+var PIEitInputNames=[];     /* Text Names */
+var PIEitInputHandles=[];   /* Text GUI object */
+var PIEsInputNames=[];      /* Slider Names */
+var PIEsInputHandles=[];    /* Slider GUI object */
+var PIEcbInputNames=[];     /* Check box Names */
+var PIEcbInputHandles=[];   /* Check box GUI object */
+var PIEcInputNames=[];      /* Command Names */
+var PIEcInputHandles=[];    /* Command GUI object */
+
+/*The Display GUI panel */
+var PIEdisplayGUI;          /* The actual display dat.gui instance */
+var PIEdisplayObject;       /* The object where all the display panel data elements are stored */
+var PIEitDisplay;           /* Number of Texts created */
+var PIEsDisplay;            /* Number of Sliders created */
+var PIEcbDisplay;           /* Number of Check boxes created */
+var PIEcDisplay;            /* Number of Commands created */
+var PIEitDisplayNames=[];   /* Text Names */
+var PIEitDisplayHandles=[]; /* Text GUI object */
+var PIEsDisplayNames=[];    /* Slider Names */
+var PIEsDisplayHandles=[];  /* Slider GUI object */
+var PIEcbDisplayNames=[];   /* Check box Names */
+var PIEcbDisplayHandles=[]; /* Check box GUI object */
+var PIEcDisplayNames=[];    /* Command Names */
+var PIEcDisplayHandles=[];  /* Command GUI object */
+
+var PIEshowInput;           /* Show Input GUI Panel flag */
+var PIEshowDisplay;         /* Show Display GUI Panel flag */
+
+function PIEdummy()
+{
+}
+
+function PIEcreateGUIVariables()
+{
+    PIEinputObject.it00 = ""; PIEinputObject.it01 = ""; PIEinputObject.it02 = ""; PIEinputObject.it03 = "";
+    PIEinputObject.it04 = ""; PIEinputObject.it05 = ""; PIEinputObject.it06 = ""; PIEinputObject.it07 = "";
+    PIEinputObject.it08 = ""; PIEinputObject.it09 = ""; PIEinputObject.it10 = ""; PIEinputObject.it11 = "";
+    PIEinputObject.it12 = ""; PIEinputObject.it13 = ""; PIEinputObject.it14 = ""; PIEinputObject.it15 = "";
+    PIEinputObject.it16 = ""; PIEinputObject.it17 = ""; PIEinputObject.it18 = ""; PIEinputObject.it19 = "";
+    PIEinputObject.s00  =  0; PIEinputObject.s01  =  0; PIEinputObject.s02  =  0; PIEinputObject.s03  =  0;
+    PIEinputObject.s04  =  0; PIEinputObject.s05  =  0; PIEinputObject.s06  =  0; PIEinputObject.s07  =  0;
+    PIEinputObject.s08  =  0; PIEinputObject.s09  =  0; PIEinputObject.s10  =  0; PIEinputObject.s11  =  0;
+    PIEinputObject.s12  =  0; PIEinputObject.s13  =  0; PIEinputObject.s14  =  0; PIEinputObject.s15  =  0;
+    PIEinputObject.s16  =  0; PIEinputObject.s17  =  0; PIEinputObject.s18  =  0; PIEinputObject.s19  =  0;
+    PIEinputObject.cb00 = false; PIEinputObject.cb01 = false; PIEinputObject.cb02 = false; PIEinputObject.cb03 = false;
+    PIEinputObject.cb04 = false; PIEinputObject.cb05 = false; PIEinputObject.cb06 = false; PIEinputObject.cb07 = false;
+    PIEinputObject.cb08 = false; PIEinputObject.cb09 = false; PIEinputObject.cb10 = false; PIEinputObject.cb11 = false;
+    PIEinputObject.cb12 = false; PIEinputObject.cb13 = false; PIEinputObject.cb14 = false; PIEinputObject.cb15 = false;
+    PIEinputObject.cb16 = false; PIEinputObject.cb17 = false; PIEinputObject.cb18 = false; PIEinputObject.cb19 = false;
+    PIEinputObject.c00  = PIEdummy; PIEinputObject.c01  = PIEdummy; PIEinputObject.c02  = PIEdummy; PIEinputObject.c03  = PIEdummy;
+    PIEinputObject.c04  = PIEdummy; PIEinputObject.c05  = PIEdummy; PIEinputObject.c06  = PIEdummy; PIEinputObject.c07  = PIEdummy;
+    PIEinputObject.c08  = PIEdummy; PIEinputObject.c09  = PIEdummy; PIEinputObject.c10  = PIEdummy; PIEinputObject.c11  = PIEdummy;
+    PIEinputObject.c12  = PIEdummy; PIEinputObject.c13  = PIEdummy; PIEinputObject.c14  = PIEdummy; PIEinputObject.c15  = PIEdummy;
+    PIEinputObject.c16  = PIEdummy; PIEinputObject.c17  = PIEdummy; PIEinputObject.c18  = PIEdummy; PIEinputObject.c19  = PIEdummy;
+    PIEdisplayObject.it00 = ""; PIEdisplayObject.it01 = ""; PIEdisplayObject.it02 = ""; PIEdisplayObject.it03 = "";
+    PIEdisplayObject.it04 = ""; PIEdisplayObject.it05 = ""; PIEdisplayObject.it06 = ""; PIEdisplayObject.it07 = "";
+    PIEdisplayObject.it08 = ""; PIEdisplayObject.it09 = ""; PIEdisplayObject.it10 = ""; PIEdisplayObject.it11 = "";
+    PIEdisplayObject.it12 = ""; PIEdisplayObject.it13 = ""; PIEdisplayObject.it14 = ""; PIEdisplayObject.it15 = "";
+    PIEdisplayObject.it16 = ""; PIEdisplayObject.it17 = ""; PIEdisplayObject.it18 = ""; PIEdisplayObject.it19 = "";
+    PIEdisplayObject.s00  =  0; PIEdisplayObject.s01  =  0; PIEdisplayObject.s02  =  0; PIEdisplayObject.s03  =  0;
+    PIEdisplayObject.s04  =  0; PIEdisplayObject.s05  =  0; PIEdisplayObject.s06  =  0; PIEdisplayObject.s07  =  0;
+    PIEdisplayObject.s08  =  0; PIEdisplayObject.s09  =  0; PIEdisplayObject.s10  =  0; PIEdisplayObject.s11  =  0;
+    PIEdisplayObject.s12  =  0; PIEdisplayObject.s13  =  0; PIEdisplayObject.s14  =  0; PIEdisplayObject.s15  =  0;
+    PIEdisplayObject.s16  =  0; PIEdisplayObject.s17  =  0; PIEdisplayObject.s18  =  0; PIEdisplayObject.s19  =  0;
+    PIEdisplayObject.cb00 = false; PIEdisplayObject.cb01 = false; PIEdisplayObject.cb02 = false; PIEdisplayObject.cb03 = false;
+    PIEdisplayObject.cb04 = false; PIEdisplayObject.cb05 = false; PIEdisplayObject.cb06 = false; PIEdisplayObject.cb07 = false;
+    PIEdisplayObject.cb08 = false; PIEdisplayObject.cb09 = false; PIEdisplayObject.cb10 = false; PIEdisplayObject.cb11 = false;
+    PIEdisplayObject.cb12 = false; PIEdisplayObject.cb13 = false; PIEdisplayObject.cb14 = false; PIEdisplayObject.cb15 = false;
+    PIEdisplayObject.cb16 = false; PIEdisplayObject.cb17 = false; PIEdisplayObject.cb18 = false; PIEdisplayObject.cb19 = false;
+    PIEdisplayObject.c00  = PIEdummy; PIEdisplayObject.c01  = PIEdummy; PIEdisplayObject.c02  = PIEdummy; PIEdisplayObject.c03  = PIEdummy;
+    PIEdisplayObject.c04  = PIEdummy; PIEdisplayObject.c05  = PIEdummy; PIEdisplayObject.c06  = PIEdummy; PIEdisplayObject.c07  = PIEdummy;
+    PIEdisplayObject.c08  = PIEdummy; PIEdisplayObject.c09  = PIEdummy; PIEdisplayObject.c10  = PIEdummy; PIEdisplayObject.c11  = PIEdummy;
+    PIEdisplayObject.c12  = PIEdummy; PIEdisplayObject.c13  = PIEdummy; PIEdisplayObject.c14  = PIEdummy; PIEdisplayObject.c15  = PIEdummy;
+    PIEdisplayObject.c16  = PIEdummy; PIEdisplayObject.c17  = PIEdummy; PIEdisplayObject.c18  = PIEdummy; PIEdisplayObject.c19  = PIEdummy;
+}
+
+function PIEshowDisplayPanel()
+{
+    PIEinputGUI.domElement.style.display = "none";
+    PIEshowInput   = false;
+    PIEdisplayGUI.domElement.style.display = "inline";
+    PIEshowDisplay = true;
+}
+
+function PIEshowInputPanel()
+{
+    PIEdisplayGUI.domElement.style.display = "none";
+    PIEshowDisplay = false;
+    PIEinputGUI.domElement.style.display = "inline";
+    PIEshowInput   = true;
+}
+
+function PIEsetupGUI()
+{
+    PIEinputObject   = new Object();
+    PIEitInput       = 0;
+    PIEsInput        = 0;
+    PIEcbInput       = 0;
+    PIEcInput        = 0;
+    PIEdisplayObject = new Object();
+    PIEitDisplay     = 0;
+    PIEsDisplay      = 0;
+    PIEcbDisplay     = 0;
+    PIEcDisplay      = 0;
+
+    PIEcreateGUIVariables();
+
+    PIEinputGUI    = new dat.gui.GUI();
+    PIEdisplayGUI  = new dat.gui.GUI();
+    PIEshowInputPanel();
+}
+
+/*
+ * This function creates all the experiment objects and loads them on the canvas
+ * <p>
+ * It is called on loading the experiment html.
+ * It initialises all the screen element handles.
+ * It adds system buttons for start/stop, pause/resume, reset.
+ * It creates ThreeJS scene, camera, renderer and other objects.
+ * It calls the developer supplied function to create experiment specific objects.
+ * It creates lights and the drag/drop plane.
+ * It adds various listeners.
+ * Finally it renders the experiment and waits for user action.
+ */
+function loadExperiment()
+{
+    /* Check if webgl is supported */
+    if ( ! Detector.webgl )
+    {   /* webgl renderer is not supported - exit */
+        Detector.addGetWebGLMessage();
+    }
+    else {   /* Webgl renderer is suported - continue */
+        /* Load Document handles */
+        PIEscreenElem = document.createElement('div');
+        document.body.appendChild(PIEscreenElem);
+        // PIEcontrolElem   = document.getElementById('controls');
+        // PIEsourceElem    = document.getElementById('source');
+        PIEsourceElem = document.createElement('span');
+        PIEscreenElem.appendChild(PIEsourceElem);
+        // PIEdesignerElem  = document.getElementById('designer');
+        PIEdesignerElem = document.createElement('span');
+        PIEscreenElem.appendChild(PIEdesignerElem);
+        // PIEtitleElem     = document.getElementById('title');
+        PIEtitleElem = document.createElement('span');
+        PIEscreenElem.appendChild(PIEtitleElem);
+        // PIEdeveloperElem = document.getElementById('developer');
+        PIEdeveloperElem = document.createElement('span');
+        PIEscreenElem.appendChild(PIEdeveloperElem);
+        // PIEscreenElem    = document.getElementById('screen');
+        /* Load Default Values */
+        PIEsourceElem.innerHTML   = "<a href=http://www.ekshiksha.org.in><b><u>ekshiksha</u></b></a>";
+        // PIEdesignerElem.innerHTML = "&nbsp;&nbsp;Layout : Nitin Ayer&nbsp;&nbsp;";
+
+        /* Get dimensions */
+        PIEcanvasW = window.innerWidth;
+        PIEcanvasH = window.innerHeight;
+        // PIEcanvasW = PIEscreenElem.clientWidth;
+        // PIEcanvasH = PIEscreenElem.clientHeight;
+        // PIEcanvasW = PIErenderer.domElement.clientWidth;
+        // PIEcanvasH = PIErenderer.domElement.clientHeight;
+        PIEcanvasAspect = PIEcanvasW/PIEcanvasH;
+
+        /* Animation Constants */
+	PIEanimationON       = false;
+	PIEanimationPaused   = false;
+        PIEanimationSpeed    = 1.0;
+        PIEminAnimationSpeed = 0.125;
+        PIEmaxAnimationSpeed = 4.0;
+
+        /* Add system Buttons */
+        PIEaddSystemButtons();
+
+        /* Add Modal Widows */
+        PIEaddModalWindows();
+
+        /* default scene display */
+        PIEscene = new THREE.Scene();
+        PIEcameraAngle = 30;
+        PIEcamera = new THREE.PerspectiveCamera(PIEcameraAngle, PIEcanvasAspect, 0.1, 1000);
+        PIEcameraTarget = new THREE.Vector3();
+
+        /* renderer */
+        PIErenderer = new THREE.WebGLRenderer({antialias:true});
+        PIErenderer.setPixelRatio( window.devicePixelRatio );
+        PIErenderer.setSize(PIEcanvasW, PIEcanvasH);
+        PIErenderer.gammaInput        = true;
+        PIErenderer.gammaOutput       = true;
+        PIErenderer.shadowMap.enabled = true;
+        PIEscreenElem.appendChild(PIErenderer.domElement);
+
+	/* Setup dat.gui Library */
+	/* temporary - till better slution found */
+        PIEsetupGUI();
+
+        /* Call experiment function to load elements */
+        loadExperimentElements();
+        /* It is assumed that the scene (area of interest) coordinates are set : PIEsetAreaOfInterest() */
+
+        /* Initiate default scene display */
+        /* Setup ambient light : to left/top of camera */
+	lightX = PIEaoiTLX + PIEaoiW * 0.25;
+	lightY = PIEaoiBRY + PIEaoiH * 0.75;
+	lightZ = PIEcamera.position.z;
+        PIEambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        PIEambientLight.position.set(lightX, lightY, lightZ);
+	PIEscene.add(PIEambientLight);
+        /* Setup shadow light : to right/top of camera */
+	lightX = PIEaoiTLX + PIEaoiW * 0.75;
+        PIEspotLight = new THREE.PointLight(0xffffff);
+        PIEspotLight.position.set(lightX, lightY, lightZ);
+        PIEspotLight.castShadow = true;
+	PIEscene.add(PIEspotLight);
+        PIEraycaster = new THREE.Raycaster();
+
+        /* For Drag and Drop */
+	PIEdragPlane     = new THREE.Plane();
+        PIEmouseP        = new THREE.Vector2();
+        PIEdragOffset    = new THREE.Vector3();
+        PIEdragIntersect = new THREE.Vector3();
+	PIEselectedDrag  = null;
+	PIEselectedHover = null;
+
+        /* Set Event Listeners */
+        window.addEventListener( 'resize', PIEresize, false );
+        PIErenderer.domElement.addEventListener( 'mousemove', PIEmouseMove, false );
+        PIErenderer.domElement.addEventListener( 'mousedown', PIEmouseDown, false );
+        PIErenderer.domElement.addEventListener( 'mouseup', PIEmouseUp, false );				
+
+        /* Show Scene */
+        PIErenderer.render(PIEscene, PIEcamera);
+    }
+}
+
+/**
+ * The function adds system buttons
+ */
+function PIEaddSystemButtons()
+{
+    PIEresetButton   = PIEaddButton("reset");
+    PIEresetButton.style.height = "100%"
+    PIEresetButton.innerHTML = "<i class=\"fa fa-undo\" aria-hidden=\"true\"></i>";
+    PIEresetButton.style.display = "inline";
+    PIEresetButton.addEventListener('click', PIEresetExperiment);
+
+    PIEstartButton   = PIEaddButton("start");
+    PIEstartButton.style.display = "inline";
+    PIEstartButton.addEventListener('click', PIEstartAnimation);
+
+    PIEstopButton    = PIEaddButton("stop");
+    PIEstopButton.style.display = "none";
+    PIEstopButton.addEventListener('click', PIEstopAnimation);
+
+    PIEpauseButton   = PIEaddButton("pause");
+    PIEpauseButton.innerHTML = "<img src=\"../PIE/images/ButtonPause.png\" alt=\"pause\">";
+    PIEpauseButton.style.display = "inline";
+    PIEpauseButton.style.visibility = "hidden";
+    PIEpauseButton.addEventListener('click', PIEpauseAnimation);
+
+    PIEresumeButton   = PIEaddButton("resume");
+    PIEresumeButton.innerHTML = "<img src=\"../PIE/images/ButtonPlay.png\" alt=\"resume\">";
+    PIEresumeButton.style.display = "none";
+    PIEresumeButton.style.visibility = "hidden";
+    PIEresumeButton.addEventListener('click', PIEresumeAnimation);
+
+    PIEslowdownButton    = PIEaddButton("<<");
+    PIEslowdownButton.addEventListener('click', PIEslowdownAnimation);
+    PIEspeedElem = document.createElement('span');
+    PIEspeedElem.innerHTML = PIEanimationSpeed;
+    PIEscreenElem.appendChild(PIEspeedElem);
+    PIEspeedupButton = PIEaddButton(">>");
+    PIEspeedupButton.addEventListener('click', PIEspeedupAnimation);
+
+    PIEinfoButton   = PIEaddButton("info");
+    PIEinfoButton.innerHTML = "<img src=\"../PIE/images/ButtonInfo.png\" alt=\"info\">";
+    PIEinfoButton.addEventListener('click', PIEshowInfo);
+
+    PIEhelpButton   = PIEaddButton("help");
+    PIEhelpButton.innerHTML = "<img src=\"../PIE/images/ButtonHelp.png\" alt=\"help\">";
+    PIEhelpButton.addEventListener('click', PIEshowHelp);
+}
+
+/**
+ * The function adds modal window
+ */
+function PIEaddModalWindows()
+{
+var modalStyle;    /* Modal Style */
+var modalContentStyle;    /* Modal Content Style */
+
+    modalStyle = "display: none; position: fixed; z-index: 1; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4);";
+    modalContentStyle = "background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 80%;";
+
+
+    PIEhelpModal = document.createElement('div');
+    PIEhelpModal.style = modalStyle;
+    PIEhelpModal.onclick = function() { PIEhelpModal.style.display = "none"; }
+    PIEhelpContent = document.createElement('div');
+    PIEhelpContent.style = modalContentStyle;
+    PIEhelpSpan = document.createElement('span');
+    PIEhelpSpan.class = "close";
+    PIEhelpSpan.innerHTML = "\&times;";
+    PIEhelpSpan.onclick = function() { PIEhelpModal.style.display = "none"; }
+    PIEhelpContent.appendChild(PIEhelpSpan);
+    PIEhelpModal.appendChild(PIEhelpContent);
+    PIEscreenElem.appendChild(PIEhelpModal);
+
+    PIEinfoModal = document.createElement('div');
+    PIEinfoModal.style = modalStyle;
+    PIEinfoModal.onclick = function() { PIEinfoModal.style.display = "none"; }
+    PIEinfoContent = document.createElement('div');
+    PIEinfoContent.style = modalContentStyle;
+    PIEinfoSpan = document.createElement('span');
+    PIEinfoSpan.class = "close";
+    PIEinfoSpan.innerHTML = "\&times;";
+    PIEinfoSpan.onclick = function() { PIEinfoModal.style.display = "none"; }
+    PIEinfoContent.appendChild(PIEinfoSpan);
+    PIEinfoModal.appendChild(PIEinfoContent);
+    PIEscreenElem.appendChild(PIEinfoModal);
+}
+
+/**
+ * This function shows the help modal
+ */
+function PIEshowHelp() { PIEhelpModal.style.display = "block"; }
+
+/**
+ * This function updates the help content with designer supplied content
+ * <p>
+ * It removes existing cntent.
+ * It adds the span showing close button.
+ * It append the given (new) content.
+ * <p>
+ * @param helpContent   HTML content to be displayed in help modal
+ */
+function PIEupdateHelp(helpContent)
+{
+var localS;
+
+    PIEhelpContent.innerHTML = "";
+    PIEhelpContent.appendChild(PIEhelpSpan);
+    localS = PIEhelpContent.innerHTML;
+    PIEhelpContent.innerHTML = localS + helpContent;
+}
+
+/**
+ * This function appends the existing help content with designer supplied content
+ * <p>
+ * It removes existing cntent.
+ * It adds the span showing close button.
+ * It append the given (new) content.
+ * <p>
+ * @param helpContent   HTML content to be displayed in help modal
+ */
+function PIEappendHelp(helpContent)
+{
+var localS;
+
+    localS = PIEhelpContent.innerHTML;
+    PIEhelpContent.innerHTML = localS + helpContent;
+}
+
+/**
+ * This function shows the info modal
+ */
+function PIEshowInfo() { PIEinfoModal.style.display = "block"; }
+
+/**
+ * This function updates the info content with designer supplied content
+ * <p>
+ * It removes existing cntent.
+ * It adds the span showing close button.
+ * It append the given (new) content.
+ * <p>
+ * @param infoContent   HTML content to be displayed in info modal
+ */
+function PIEupdateInfo(infoContent)
+{
+var localS;
+
+    PIEinfoContent.innerHTML = "";
+    PIEinfoContent.appendChild(PIEinfoSpan);
+    localS = PIEinfoContent.innerHTML;
+    PIEinfoContent.innerHTML = localS + infoContent;
+}
+
+/**
+ * This function appends the existing info content with designer supplied content
+ * <p>
+ * It removes existing cntent.
+ * It adds the span showing close button.
+ * It append the given (new) content.
+ * <p>
+ * @param infoContent   HTML content to be displayed in info modal
+ */
+function PIEappendInfo(infoContent)
+{
+var localS;
+
+    localS = PIEinfoContent.innerHTML;
+    PIEinfoContent.innerHTML = localS + infoContent;
+}
+
+/**
+ * This function handles the resizing of the window.
+ * <p>
+ * The display scene variables will be computed such that the area of interest is visible and will occupy maximum display.
+ * The area of interest will occupy the center of the screen.
+ * The aspect ratio of the display scene will match the aspect ration of the display element.
+ * <p>
+ * The camera will be positioned such that it will look right down at the center of the area.
+ * The camera z coordinate will be such that the area is visible and will occupy maximum display.
+ * The camera aspect ratio will continue to be equal to the aspect ratio of the screen element
+ */
+function PIEresize()
+{
+var newW;
+var newH;
+
+    /* Set new screen dimensions */
+    newW = window.innerWidth;
+    newH = window.innerHeight;
+    PIEcanvasW = newW;
+    PIEcanvasH = newH;
+    PIEcanvasAspect = PIEcanvasW/PIEcanvasH;
+
+    /* Adjust Renderer */
+    PIErenderer.setSize(PIEcanvasW, PIEcanvasH);
+
+    /* Adjust Display Screen : camera(fov, aspect), scene dimensions */
+    PIEadjustDisplayScene();
+
+    /* render */
+    PIErender();
+}
+
+/**
+ * This function sets the title of the experiment.
+ * <p>
+ * @param title  The exepriment name
+ */
+function PIEsetExperimentTitle(title)
+{
+    PIEtitleElem.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><u>" + title + "</u></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+}
+
+/**
+ * This function sets the name of the developer of the experiment.
+ * <p>
+ * @param name  The developer name(s)
+ */
+function PIEsetDeveloperName(name)
+{
+    PIEdeveloperElem.innerHTML = "Created by : " + name;
+}
+
+/**
+ * This function hides the control bar
+ * <p>
+ * This should be called when there are no experiment controls.
+ * Happens when all the interacions are supported within the canvas element.
+ */
+function PIEhideControlElement()
+{
+    // PIEcontrolElem.style.display = 'none';
+}
+
+/**
+ * This function shows the control bar
+ */
+function PIEshowControlElement()
+{
+    // PIEcontrolElem.style.display = 'inline';
+}
+
+/**
+ * This function adds a text input element to both the input and display GUI panels
+ * <p>
+ * The label is the id (label) appearing before the input.
+ * The value is the default value appearing in the input.
+ * It in turn calls the PIEaddInputText and PIEaddDisplayText 
+ * <p>
+ * @param label      The label to appear on the input element
+ * @param value      The initial value of the text element
+ * @param notify     The callback function to be called on text change completion
+ */
+function PIEaddDualText(label, value, notify)
+{
+    PIEaddInputText(label, value, notify);
+    PIEaddDisplayText(label, value);
+}
+
+/**
+ * This function adds a text input element to the display GUI panel
+ * <p>
+ * The label is the id (label) appearing before the input.
+ * The value is the default value appearing in the input.
+ * <p>
+ * @param label      The label to appear on the input element
+ * @param value      The initial value of the text element
+ */
+function PIEaddDisplayText(label, value)
+{
+var localO;
+
+    switch (PIEitDisplay)
+    {
+      case 0:  PIEdisplayObject.it00 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it00").name(label); break;
+      case 1:  PIEdisplayObject.it01 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it01").name(label); break;
+      case 2:  PIEdisplayObject.it02 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it02").name(label); break;
+      case 3:  PIEdisplayObject.it03 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it03").name(label); break;
+      case 4:  PIEdisplayObject.it04 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it04").name(label); break;
+      case 5:  PIEdisplayObject.it05 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it05").name(label); break;
+      case 6:  PIEdisplayObject.it06 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it06").name(label); break;
+      case 7:  PIEdisplayObject.it07 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it07").name(label); break;
+      case 8:  PIEdisplayObject.it08 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it08").name(label); break;
+      case 9:  PIEdisplayObject.it09 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it09").name(label); break;
+      case 10: PIEdisplayObject.it10 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it10").name(label); break;
+      case 11: PIEdisplayObject.it11 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it11").name(label); break;
+      case 12: PIEdisplayObject.it12 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it12").name(label); break;
+      case 13: PIEdisplayObject.it13 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it13").name(label); break;
+      case 14: PIEdisplayObject.it14 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it14").name(label); break;
+      case 15: PIEdisplayObject.it15 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it15").name(label); break;
+      case 16: PIEdisplayObject.it16 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it16").name(label); break;
+      case 17: PIEdisplayObject.it17 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it17").name(label); break;
+      case 18: PIEdisplayObject.it18 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it18").name(label); break;
+      case 19: PIEdisplayObject.it19 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "it19").name(label); break;
+      default: return; break;
+    }
+    PIEitDisplayHandles.push(localO);
+    PIEitDisplayNames.push(label);
+    PIEitDisplay++;
+}
+
+/**
+ * This function adds a text input element to Input GUI panel
+ * <p>
+ * The label is the id (label) appearing before the input.
+ * The value is the default value appearing in the input.
+ * The notify function is called when the element loses focus (onFinishChange).
+ * <p>
+ * @param label      The label to appear on the input element
+ * @param value      The initial value of the text element
+ * @param notify     The callback function to be called on text change completion
+ */
+function PIEaddInputText(label, value, notify)
+{
+var localO;
+
+    switch (PIEitInput)
+    {
+      case 0:  PIEinputObject.it00 = value; localO = PIEinputGUI.add(PIEinputObject, "it00").name(label); break;
+      case 1:  PIEinputObject.it01 = value; localO = PIEinputGUI.add(PIEinputObject, "it01").name(label); break;
+      case 2:  PIEinputObject.it02 = value; localO = PIEinputGUI.add(PIEinputObject, "it02").name(label); break;
+      case 3:  PIEinputObject.it03 = value; localO = PIEinputGUI.add(PIEinputObject, "it03").name(label); break;
+      case 4:  PIEinputObject.it04 = value; localO = PIEinputGUI.add(PIEinputObject, "it04").name(label); break;
+      case 5:  PIEinputObject.it05 = value; localO = PIEinputGUI.add(PIEinputObject, "it05").name(label); break;
+      case 6:  PIEinputObject.it06 = value; localO = PIEinputGUI.add(PIEinputObject, "it06").name(label); break;
+      case 7:  PIEinputObject.it07 = value; localO = PIEinputGUI.add(PIEinputObject, "it07").name(label); break;
+      case 8:  PIEinputObject.it08 = value; localO = PIEinputGUI.add(PIEinputObject, "it08").name(label); break;
+      case 9:  PIEinputObject.it09 = value; localO = PIEinputGUI.add(PIEinputObject, "it09").name(label); break;
+      case 10: PIEinputObject.it10 = value; localO = PIEinputGUI.add(PIEinputObject, "it10").name(label); break;
+      case 11: PIEinputObject.it11 = value; localO = PIEinputGUI.add(PIEinputObject, "it11").name(label); break;
+      case 12: PIEinputObject.it12 = value; localO = PIEinputGUI.add(PIEinputObject, "it12").name(label); break;
+      case 13: PIEinputObject.it13 = value; localO = PIEinputGUI.add(PIEinputObject, "it13").name(label); break;
+      case 14: PIEinputObject.it14 = value; localO = PIEinputGUI.add(PIEinputObject, "it14").name(label); break;
+      case 15: PIEinputObject.it15 = value; localO = PIEinputGUI.add(PIEinputObject, "it15").name(label); break;
+      case 16: PIEinputObject.it16 = value; localO = PIEinputGUI.add(PIEinputObject, "it16").name(label); break;
+      case 17: PIEinputObject.it17 = value; localO = PIEinputGUI.add(PIEinputObject, "it17").name(label); break;
+      case 18: PIEinputObject.it18 = value; localO = PIEinputGUI.add(PIEinputObject, "it18").name(label); break;
+      case 19: PIEinputObject.it19 = value; localO = PIEinputGUI.add(PIEinputObject, "it19").name(label); break;
+      default: return; break;
+    }
+    localO.onFinishChange(notify);
+    PIEitInputHandles.push(localO);
+    PIEitInputNames.push(label);
+    PIEitInput++;
+}
+
+/**
+ * This function changes the value in a Display text
+ * <p>
+ * @param label      The label appearing on the input element
+ * @param value      The value to be put in the box
+ */
+function PIEchangeDisplayText(label, value)
+{
+var localO;
+var localI;
+
+    /* Find Text Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEitDisplay); localI++)
+    { if (PIEitDisplayNames[localI] == label) { localO = PIEitDisplayHandles[localI]; } }
+    /* Set value of Display Text Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEdisplayObject.it00 = value; break;
+          case 1:  PIEdisplayObject.it01 = value; break;
+          case 2:  PIEdisplayObject.it02 = value; break;
+          case 3:  PIEdisplayObject.it03 = value; break;
+          case 4:  PIEdisplayObject.it04 = value; break;
+          case 5:  PIEdisplayObject.it05 = value; break;
+          case 6:  PIEdisplayObject.it06 = value; break;
+          case 7:  PIEdisplayObject.it07 = value; break;
+          case 8:  PIEdisplayObject.it08 = value; break;
+          case 9:  PIEdisplayObject.it09 = value; break;
+          case 10: PIEdisplayObject.it10 = value; break;
+          case 11: PIEdisplayObject.it11 = value; break;
+          case 12: PIEdisplayObject.it12 = value; break;
+          case 13: PIEdisplayObject.it13 = value; break;
+          case 14: PIEdisplayObject.it14 = value; break;
+          case 15: PIEdisplayObject.it15 = value; break;
+          case 16: PIEdisplayObject.it16 = value; break;
+          case 17: PIEdisplayObject.it17 = value; break;
+          case 18: PIEdisplayObject.it18 = value; break;
+          case 19: PIEdisplayObject.it19 = value; break;
+          default: break;
+        }
+        /* Update display */
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function changes the value in a input text
+ * <p>
+ * @param label      The label appearing on the input element
+ * @param value      The value to be put in the box
+ */
+function PIEchangeInputText(label, value)
+{
+var localO;
+var localI;
+
+    /* Find Text Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEitInput); localI++)
+    { if (PIEitInputNames[localI] == label) { localO = PIEitInputHandles[localI]; } }
+    /* Set value of Input Text Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEinputObject.it00 = value; break;
+          case 1:  PIEinputObject.it01 = value; break;
+          case 2:  PIEinputObject.it02 = value; break;
+          case 3:  PIEinputObject.it03 = value; break;
+          case 4:  PIEinputObject.it04 = value; break;
+          case 5:  PIEinputObject.it05 = value; break;
+          case 6:  PIEinputObject.it06 = value; break;
+          case 7:  PIEinputObject.it07 = value; break;
+          case 8:  PIEinputObject.it08 = value; break;
+          case 9:  PIEinputObject.it09 = value; break;
+          case 10: PIEinputObject.it10 = value; break;
+          case 11: PIEinputObject.it11 = value; break;
+          case 12: PIEinputObject.it12 = value; break;
+          case 13: PIEinputObject.it13 = value; break;
+          case 14: PIEinputObject.it14 = value; break;
+          case 15: PIEinputObject.it15 = value; break;
+          case 16: PIEinputObject.it16 = value; break;
+          case 17: PIEinputObject.it17 = value; break;
+          case 18: PIEinputObject.it18 = value; break;
+          case 19: PIEinputObject.it19 = value; break;
+          default: break;
+        }
+        /* Update display */
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function accesses the text in the input text
+ * <p>
+ * @param label      The label appearing on the input text
+ * @return           The value in the box
+ */
+function PIEgetDisplayText(label)
+{
+var found;
+var localI;
+var value;
+
+    /* Find Input Text Element */
+    found = false;
+    for (localI = 0; (found == false) && (localI < PIEitDisplay); localI++)
+    { if (PIEitDisplayNames[localI] == label) { found = true; } }
+    /* Fetch value of Input Text Element */
+    value = ""; 
+    if (found == true)
+    {
+        switch (localI - 1)
+        {
+          case 0:  value = PIEdisplayObject.it00; break;
+          case 1:  value = PIEdisplayObject.it01; break;
+          case 2:  value = PIEdisplayObject.it02; break;
+          case 3:  value = PIEdisplayObject.it03; break;
+          case 4:  value = PIEdisplayObject.it04; break;
+          case 5:  value = PIEdisplayObject.it05; break;
+          case 6:  value = PIEdisplayObject.it06; break;
+          case 7:  value = PIEdisplayObject.it07; break;
+          case 8:  value = PIEdisplayObject.it08; break;
+          case 9:  value = PIEdisplayObject.it09; break;
+          case 10: value = PIEdisplayObject.it10; break;
+          case 11: value = PIEdisplayObject.it11; break;
+          case 12: value = PIEdisplayObject.it12; break;
+          case 13: value = PIEdisplayObject.it13; break;
+          case 14: value = PIEdisplayObject.it14; break;
+          case 15: value = PIEdisplayObject.it15; break;
+          case 16: value = PIEdisplayObject.it16; break;
+          case 17: value = PIEdisplayObject.it17; break;
+          case 18: value = PIEdisplayObject.it18; break;
+          case 19: value = PIEdisplayObject.it19; break;
+          default: break;
+        }
+    }
+    return(value);
+}
+
+/**
+ * This function accesses the text in the input text
+ * <p>
+ * @param label      The label appearing on the input text
+ * @return           The value in the box
+ */
+function PIEgetInputText(label)
+{
+var found;
+var localI;
+var value;
+
+    /* Find Input Text Element */
+    found = false;
+    for (localI = 0; (found == false) && (localI < PIEitInput); localI++)
+    { if (PIEitInputNames[localI] == label) { found = true; } }
+    /* Fetch value of Input Text Element */
+    value = ""; 
+    if (found == true)
+    {
+        switch (localI - 1)
+        {
+          case 0:  value = PIEinputObject.it00; break;
+          case 1:  value = PIEinputObject.it01; break;
+          case 2:  value = PIEinputObject.it02; break;
+          case 3:  value = PIEinputObject.it03; break;
+          case 4:  value = PIEinputObject.it04; break;
+          case 5:  value = PIEinputObject.it05; break;
+          case 6:  value = PIEinputObject.it06; break;
+          case 7:  value = PIEinputObject.it07; break;
+          case 8:  value = PIEinputObject.it08; break;
+          case 9:  value = PIEinputObject.it09; break;
+          case 10: value = PIEinputObject.it10; break;
+          case 11: value = PIEinputObject.it11; break;
+          case 12: value = PIEinputObject.it12; break;
+          case 13: value = PIEinputObject.it13; break;
+          case 14: value = PIEinputObject.it14; break;
+          case 15: value = PIEinputObject.it15; break;
+          case 16: value = PIEinputObject.it16; break;
+          case 17: value = PIEinputObject.it17; break;
+          case 18: value = PIEinputObject.it18; break;
+          case 19: value = PIEinputObject.it19; break;
+          default: break;
+        }
+    }
+    return(value);
+}
+
+/**
+ * This function adds a slider element to both the input and display GUI panels
+ * <p>
+ * The label is the id (label) appearing before the slider.
+ * The value is the default value appearing in the slider.
+ * The min, max, step define slider behaviour.
+ * The notify function is called on slider change completion.
+ * It in turn calls the PIEaddInputSlider and PIEaddDisplaySlider.
+ * <p>
+ * @param label      The label to appear on the input element
+ * @param value      The initial value of the slider
+ * @param notify     The callback function to be called on slider change completion
+ * @param min        The Minimum value in slider
+ * @param max        The Maximum value in slider
+ * @param step       The The step by shic slider should change
+ */
+function PIEaddDualText(label, value, notify, min, max, step)
+{
+    PIEaddInputSlider(label, value, notify, min, max, step);
+    PIEaddDisplaySlider(label, value, min, max, step);
+}
+
+/**
+ * This function adds a slider element to the input panel
+ * <p>
+ * The label is the id (label) appearing before the slider.
+ * The value is the default value appearing in the slider.
+ * The min, max, step define slider behaviour.
+ * <p>
+ * @param label      The label to appear on the input element
+ * @param value      The initial value of the slider
+ * @param min        The Minimum value in slider
+ * @param max        The Maximum value in slider
+ * @param step       The The step by which slider should change
+ */
+function PIEaddDisplaySlider(label, value, min, max, step)
+{
+var localO;
+
+    switch (PIEsDisplay)
+    {
+      case 0:  PIEdisplayObject.s00 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s00").min(min).max(max).step(step).name(label); break;
+      case 1:  PIEdisplayObject.s01 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s01").min(min).max(max).step(step).name(label); break;
+      case 2:  PIEdisplayObject.s02 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s02").min(min).max(max).step(step).name(label); break;
+      case 3:  PIEdisplayObject.s03 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s03").min(min).max(max).step(step).name(label); break;
+      case 4:  PIEdisplayObject.s04 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s04").min(min).max(max).step(step).name(label); break;
+      case 5:  PIEdisplayObject.s05 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s05").min(min).max(max).step(step).name(label); break;
+      case 6:  PIEdisplayObject.s06 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s06").min(min).max(max).step(step).name(label); break;
+      case 7:  PIEdisplayObject.s07 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s07").min(min).max(max).step(step).name(label); break;
+      case 8:  PIEdisplayObject.s08 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s08").min(min).max(max).step(step).name(label); break;
+      case 9:  PIEdisplayObject.s09 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s09").min(min).max(max).step(step).name(label); break;
+      case 10: PIEdisplayObject.s10 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s10").min(min).max(max).step(step).name(label); break;
+      case 11: PIEdisplayObject.s11 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s11").min(min).max(max).step(step).name(label); break;
+      case 12: PIEdisplayObject.s12 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s12").min(min).max(max).step(step).name(label); break;
+      case 13: PIEdisplayObject.s13 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s13").min(min).max(max).step(step).name(label); break;
+      case 14: PIEdisplayObject.s14 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s14").min(min).max(max).step(step).name(label); break;
+      case 15: PIEdisplayObject.s15 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s15").min(min).max(max).step(step).name(label); break;
+      case 16: PIEdisplayObject.s16 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s16").min(min).max(max).step(step).name(label); break;
+      case 17: PIEdisplayObject.s17 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s17").min(min).max(max).step(step).name(label); break;
+      case 18: PIEdisplayObject.s18 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s18").min(min).max(max).step(step).name(label); break;
+      case 19: PIEdisplayObject.s19 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "s19").min(min).max(max).step(step).name(label); break;
+      default: return; break;
+    }
+    PIEsDisplayHandles.push(localO);
+    PIEsDisplayNames.push(label);
+    PIEsDisplay++;
+}
+
+/**
+ * This function adds a slider element to the input panel
+ * <p>
+ * The label is the id (label) appearing before the slider.
+ * The value is the default value appearing in the slider.
+ * The min, max, step define slider behaviour.
+ * The notify function is called on slider change completion.
+ * <p>
+ * @param label      The label to appear on the input element
+ * @param value      The initial value of the slider
+ * @param notify     The callback function to be called on slider change completion
+ * @param min        The Minimum value in slider
+ * @param max        The Maximum value in slider
+ * @param step       The The step by which slider should change
+ */
+function PIEaddInputSlider(label, value, notify, min, max, step)
+{
+var localO;
+
+    switch (PIEsInput)
+    {
+      case 0:  PIEinputObject.s00 = value; localO = PIEinputGUI.add(PIEinputObject, "s00").min(min).max(max).step(step).name(label); break;
+      case 1:  PIEinputObject.s01 = value; localO = PIEinputGUI.add(PIEinputObject, "s01").min(min).max(max).step(step).name(label); break;
+      case 2:  PIEinputObject.s02 = value; localO = PIEinputGUI.add(PIEinputObject, "s02").min(min).max(max).step(step).name(label); break;
+      case 3:  PIEinputObject.s03 = value; localO = PIEinputGUI.add(PIEinputObject, "s03").min(min).max(max).step(step).name(label); break;
+      case 4:  PIEinputObject.s04 = value; localO = PIEinputGUI.add(PIEinputObject, "s04").min(min).max(max).step(step).name(label); break;
+      case 5:  PIEinputObject.s05 = value; localO = PIEinputGUI.add(PIEinputObject, "s05").min(min).max(max).step(step).name(label); break;
+      case 6:  PIEinputObject.s06 = value; localO = PIEinputGUI.add(PIEinputObject, "s06").min(min).max(max).step(step).name(label); break;
+      case 7:  PIEinputObject.s07 = value; localO = PIEinputGUI.add(PIEinputObject, "s07").min(min).max(max).step(step).name(label); break;
+      case 8:  PIEinputObject.s08 = value; localO = PIEinputGUI.add(PIEinputObject, "s08").min(min).max(max).step(step).name(label); break;
+      case 9:  PIEinputObject.s09 = value; localO = PIEinputGUI.add(PIEinputObject, "s09").min(min).max(max).step(step).name(label); break;
+      case 10: PIEinputObject.s10 = value; localO = PIEinputGUI.add(PIEinputObject, "s10").min(min).max(max).step(step).name(label); break;
+      case 11: PIEinputObject.s11 = value; localO = PIEinputGUI.add(PIEinputObject, "s11").min(min).max(max).step(step).name(label); break;
+      case 12: PIEinputObject.s12 = value; localO = PIEinputGUI.add(PIEinputObject, "s12").min(min).max(max).step(step).name(label); break;
+      case 13: PIEinputObject.s13 = value; localO = PIEinputGUI.add(PIEinputObject, "s13").min(min).max(max).step(step).name(label); break;
+      case 14: PIEinputObject.s14 = value; localO = PIEinputGUI.add(PIEinputObject, "s14").min(min).max(max).step(step).name(label); break;
+      case 15: PIEinputObject.s15 = value; localO = PIEinputGUI.add(PIEinputObject, "s15").min(min).max(max).step(step).name(label); break;
+      case 16: PIEinputObject.s16 = value; localO = PIEinputGUI.add(PIEinputObject, "s16").min(min).max(max).step(step).name(label); break;
+      case 17: PIEinputObject.s17 = value; localO = PIEinputGUI.add(PIEinputObject, "s17").min(min).max(max).step(step).name(label); break;
+      case 18: PIEinputObject.s18 = value; localO = PIEinputGUI.add(PIEinputObject, "s18").min(min).max(max).step(step).name(label); break;
+      case 19: PIEinputObject.s19 = value; localO = PIEinputGUI.add(PIEinputObject, "s19").min(min).max(max).step(step).name(label); break;
+      default: return; break;
+    }
+    localO.onFinishChange(notify);
+    PIEsInputHandles.push(localO);
+    PIEsInputNames.push(label);
+    PIEsInput++;
+}
+
+/**
+ * This function changes the value in an Display slider
+ * <p>
+ * @param label      The label appearing on the input slider
+ * @param value      The value to be put in the slider
+ */
+function PIEchangeDisplaySlider(label, value)
+{
+var localO;
+var localI;
+
+    /* Find Slider Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEsDisplay); localI++)
+    { if (PIEsDisplayNames[localI] == label) { localO = PIEsDisplayHandles[localI]; } }
+    /* Set value of Slider Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEdisplayObject.s00 = value; break;
+          case 1:  PIEdisplayObject.s01 = value; break;
+          case 2:  PIEdisplayObject.s02 = value; break;
+          case 3:  PIEdisplayObject.s03 = value; break;
+          case 4:  PIEdisplayObject.s04 = value; break;
+          case 5:  PIEdisplayObject.s05 = value; break;
+          case 6:  PIEdisplayObject.s06 = value; break;
+          case 7:  PIEdisplayObject.s07 = value; break;
+          case 8:  PIEdisplayObject.s08 = value; break;
+          case 9:  PIEdisplayObject.s09 = value; break;
+          case 10: PIEdisplayObject.s10 = value; break;
+          case 11: PIEdisplayObject.s11 = value; break;
+          case 12: PIEdisplayObject.s12 = value; break;
+          case 13: PIEdisplayObject.s13 = value; break;
+          case 14: PIEdisplayObject.s14 = value; break;
+          case 15: PIEdisplayObject.s15 = value; break;
+          case 16: PIEdisplayObject.s16 = value; break;
+          case 17: PIEdisplayObject.s17 = value; break;
+          case 18: PIEdisplayObject.s18 = value; break;
+          case 19: PIEdisplayObject.s19 = value; break;
+          default: break;
+        }
+        /* Update display */
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function changes the value in an input slider
+ * <p>
+ * @param label      The label appearing on the input slider
+ * @param value      The value to be put in the slider
+ */
+function PIEchangeInputSlider(label, value)
+{
+var localO;
+var localI;
+
+    /* Find Slider Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEsInput); localI++)
+    { if (PIEsInputNames[localI] == label) { localO = PIEsInputHandles[localI]; } }
+    /* Set value of Slider Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEinputObject.s00 = value; break;
+          case 1:  PIEinputObject.s01 = value; break;
+          case 2:  PIEinputObject.s02 = value; break;
+          case 3:  PIEinputObject.s03 = value; break;
+          case 4:  PIEinputObject.s04 = value; break;
+          case 5:  PIEinputObject.s05 = value; break;
+          case 6:  PIEinputObject.s06 = value; break;
+          case 7:  PIEinputObject.s07 = value; break;
+          case 8:  PIEinputObject.s08 = value; break;
+          case 9:  PIEinputObject.s09 = value; break;
+          case 10: PIEinputObject.s10 = value; break;
+          case 11: PIEinputObject.s11 = value; break;
+          case 12: PIEinputObject.s12 = value; break;
+          case 13: PIEinputObject.s13 = value; break;
+          case 14: PIEinputObject.s14 = value; break;
+          case 15: PIEinputObject.s15 = value; break;
+          case 16: PIEinputObject.s16 = value; break;
+          case 17: PIEinputObject.s17 = value; break;
+          case 18: PIEinputObject.s18 = value; break;
+          case 19: PIEinputObject.s19 = value; break;
+          default: break;
+        }
+        /* Update display */
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function accesses the value in an Display slider element
+ * <p>
+ * @param label      The label appearing on the Display slider
+ * @return           The value in the slider
+ */
+function PIEgetDisplaySlider(label)
+{
+var found;
+var localI;
+var value;
+
+    /* Find Slider Element */
+    found = false;
+    for (localI = 0; (found == false) && (localI < PIEsDisplay); localI++)
+    { if (PIEsDisplayNames[localI] == label) { found = true; } }
+    /* Fetch value of Slider Element */
+    value = 0.0; 
+    if (found == true)
+    {
+        switch (localI - 1)
+        {
+          case 0:  value = PIEdisplayObject.s00; break;
+          case 1:  value = PIEdisplayObject.s01; break;
+          case 2:  value = PIEdisplayObject.s02; break;
+          case 3:  value = PIEdisplayObject.s03; break;
+          case 4:  value = PIEdisplayObject.s04; break;
+          case 5:  value = PIEdisplayObject.s05; break;
+          case 6:  value = PIEdisplayObject.s06; break;
+          case 7:  value = PIEdisplayObject.s07; break;
+          case 8:  value = PIEdisplayObject.s08; break;
+          case 9:  value = PIEdisplayObject.s09; break;
+          case 10: value = PIEdisplayObject.s10; break;
+          case 11: value = PIEdisplayObject.s11; break;
+          case 12: value = PIEdisplayObject.s12; break;
+          case 13: value = PIEdisplayObject.s13; break;
+          case 14: value = PIEdisplayObject.s14; break;
+          case 15: value = PIEdisplayObject.s15; break;
+          case 16: value = PIEdisplayObject.s16; break;
+          case 17: value = PIEdisplayObject.s17; break;
+          case 18: value = PIEdisplayObject.s18; break;
+          case 19: value = PIEdisplayObject.s19; break;
+          default: break;
+        }
+    }
+    return(value);
+}
+
+/**
+ * This function accesses the value in an Input slider element
+ * <p>
+ * @param label      The label appearing on the input slider
+ * @return           The value in the slider
+ */
+function PIEgetInputSlider(label)
+{
+var found;
+var localI;
+var value;
+
+    /* Find Slider Element */
+    found = false;
+    for (localI = 0; (found == false) && (localI < PIEsInput); localI++)
+    { if (PIEsInputNames[localI] == label) { found = true; } }
+    /* Fetch value of Slider Element */
+    value = 0.0; 
+    if (found == true)
+    {
+        switch (localI - 1)
+        {
+          case 0:  value = PIEinputObject.s00; break;
+          case 1:  value = PIEinputObject.s01; break;
+          case 2:  value = PIEinputObject.s02; break;
+          case 3:  value = PIEinputObject.s03; break;
+          case 4:  value = PIEinputObject.s04; break;
+          case 5:  value = PIEinputObject.s05; break;
+          case 6:  value = PIEinputObject.s06; break;
+          case 7:  value = PIEinputObject.s07; break;
+          case 8:  value = PIEinputObject.s08; break;
+          case 9:  value = PIEinputObject.s09; break;
+          case 10: value = PIEinputObject.s10; break;
+          case 11: value = PIEinputObject.s11; break;
+          case 12: value = PIEinputObject.s12; break;
+          case 13: value = PIEinputObject.s13; break;
+          case 14: value = PIEinputObject.s14; break;
+          case 15: value = PIEinputObject.s15; break;
+          case 16: value = PIEinputObject.s16; break;
+          case 17: value = PIEinputObject.s17; break;
+          case 18: value = PIEinputObject.s18; break;
+          case 19: value = PIEinputObject.s19; break;
+          default: break;
+        }
+    }
+    return(value);
+}
+
+/**
+ * This function adds a check box element to both the input and display GUI panels
+ * <p>
+ * The label is the id (label) appearing before the checkbox.
+ * The value is the default value appearing in the checkbox.
+ * The notify function is called on checkbox click.
+ * It in turn calls the PIEaddInputCheckbox and PIEaddDisplayCheckbox.
+ * <p>
+ * @param label      The label to appear on the checkbox element
+ * @param value      The initial value of the checkbox
+ * @param notify     The callback function to be called on checkbox click
+ */
+function PIEaddDualCheckbox(label, value, notify)
+{
+    PIEaddInputCheckbox(label, value, notify);
+    PIEaddDisplayCheckbox(label, value);
+}
+
+/**
+ * This function adds a checkbox element to the Display panel
+ * <p>
+ * The label is the id (label) appearing before the checkbox.
+ * <p>
+ * @param label      The label to appear on the checkbox element
+ * @param value      The initial value of the checkbox element
+ * @param notify     The callback function to be called on click
+ */
+function PIEaddDisplayCheckbox(label, value, notify)
+{
+var localO;
+
+    switch (PIEcbDisplay)
+    {
+      case 0:  PIEdisplayObject.cb00 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb00").name(label); break;
+      case 1:  PIEdisplayObject.cb01 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb01").name(label); break;
+      case 2:  PIEdisplayObject.cb02 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb02").name(label); break;
+      case 3:  PIEdisplayObject.cb03 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb03").name(label); break;
+      case 4:  PIEdisplayObject.cb04 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb04").name(label); break;
+      case 5:  PIEdisplayObject.cb05 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb05").name(label); break;
+      case 6:  PIEdisplayObject.cb06 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb06").name(label); break;
+      case 7:  PIEdisplayObject.cb07 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb07").name(label); break;
+      case 8:  PIEdisplayObject.cb08 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb08").name(label); break;
+      case 9:  PIEdisplayObject.cb09 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb09").name(label); break;
+      case 10: PIEdisplayObject.cb10 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb10").name(label); break;
+      case 11: PIEdisplayObject.cb11 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb11").name(label); break;
+      case 12: PIEdisplayObject.cb12 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb12").name(label); break;
+      case 13: PIEdisplayObject.cb13 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb13").name(label); break;
+      case 14: PIEdisplayObject.cb14 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb14").name(label); break;
+      case 15: PIEdisplayObject.cb15 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb15").name(label); break;
+      case 16: PIEdisplayObject.cb16 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb16").name(label); break;
+      case 17: PIEdisplayObject.cb17 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb17").name(label); break;
+      case 18: PIEdisplayObject.cb18 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb18").name(label); break;
+      case 19: PIEdisplayObject.cb19 = value; localO = PIEdisplayGUI.add(PIEdisplayObject, "cb19").name(label); break;
+      default: return; break;
+    }
+    localO.onChange(notify);
+    PIEcbDisplayHandles.push(localO);
+    PIEcbDisplayNames.push(label);
+    PIEcbDisplay++;
+}
+
+/**
+ * This function adds a checkbox element to the Input panel
+ * <p>
+ * The label is the id (label) appearing before the checkbox.
+ * <p>
+ * @param label      The label to appear on the checkbox element
+ * @param value      The initial value of the checkbox element
+ * @param notify     The callback function to be called on click
+ */
+function PIEaddInputCheckbox(label, value, notify)
+{
+var localO;
+
+    switch (PIEcbInput)
+    {
+      case 0:  PIEinputObject.cb00 = value; localO = PIEinputGUI.add(PIEinputObject, "cb00").name(label); break;
+      case 1:  PIEinputObject.cb01 = value; localO = PIEinputGUI.add(PIEinputObject, "cb01").name(label); break;
+      case 2:  PIEinputObject.cb02 = value; localO = PIEinputGUI.add(PIEinputObject, "cb02").name(label); break;
+      case 3:  PIEinputObject.cb03 = value; localO = PIEinputGUI.add(PIEinputObject, "cb03").name(label); break;
+      case 4:  PIEinputObject.cb04 = value; localO = PIEinputGUI.add(PIEinputObject, "cb04").name(label); break;
+      case 5:  PIEinputObject.cb05 = value; localO = PIEinputGUI.add(PIEinputObject, "cb05").name(label); break;
+      case 6:  PIEinputObject.cb06 = value; localO = PIEinputGUI.add(PIEinputObject, "cb06").name(label); break;
+      case 7:  PIEinputObject.cb07 = value; localO = PIEinputGUI.add(PIEinputObject, "cb07").name(label); break;
+      case 8:  PIEinputObject.cb08 = value; localO = PIEinputGUI.add(PIEinputObject, "cb08").name(label); break;
+      case 9:  PIEinputObject.cb09 = value; localO = PIEinputGUI.add(PIEinputObject, "cb09").name(label); break;
+      case 10: PIEinputObject.cb10 = value; localO = PIEinputGUI.add(PIEinputObject, "cb10").name(label); break;
+      case 11: PIEinputObject.cb11 = value; localO = PIEinputGUI.add(PIEinputObject, "cb11").name(label); break;
+      case 12: PIEinputObject.cb12 = value; localO = PIEinputGUI.add(PIEinputObject, "cb12").name(label); break;
+      case 13: PIEinputObject.cb13 = value; localO = PIEinputGUI.add(PIEinputObject, "cb13").name(label); break;
+      case 14: PIEinputObject.cb14 = value; localO = PIEinputGUI.add(PIEinputObject, "cb14").name(label); break;
+      case 15: PIEinputObject.cb15 = value; localO = PIEinputGUI.add(PIEinputObject, "cb15").name(label); break;
+      case 16: PIEinputObject.cb16 = value; localO = PIEinputGUI.add(PIEinputObject, "cb16").name(label); break;
+      case 17: PIEinputObject.cb17 = value; localO = PIEinputGUI.add(PIEinputObject, "cb17").name(label); break;
+      case 18: PIEinputObject.cb18 = value; localO = PIEinputGUI.add(PIEinputObject, "cb18").name(label); break;
+      case 19: PIEinputObject.cb19 = value; localO = PIEinputGUI.add(PIEinputObject, "cb19").name(label); break;
+      default: return; break;
+    }
+    localO.onChange(notify);
+    PIEcbInputHandles.push(localO);
+    PIEcbInputNames.push(label);
+    PIEcbInput++;
+}
+
+/**
+ * This function changes the checkbox element on the Display panel
+ * <p>
+ * @param label      The label appearing on the checkbox element
+ * @param value      The new value of the checkbox
+ */
+function PIEchangeDisplayCheckbox(label, value)
+{
+var localO;
+var localI;
+
+    /* Find Checkbox Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEcbDisplay); localI++)
+    { if (PIEcbDisplayNames[localI] == label) { localO = PIEcbDisplayHandles[localI]; } }
+    /* Set value of Checkbox Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEdisplayObject.cb00 = value; break;
+          case 1:  PIEdisplayObject.cb01 = value; break;
+          case 2:  PIEdisplayObject.cb02 = value; break;
+          case 3:  PIEdisplayObject.cb03 = value; break;
+          case 4:  PIEdisplayObject.cb04 = value; break;
+          case 5:  PIEdisplayObject.cb05 = value; break;
+          case 6:  PIEdisplayObject.cb06 = value; break;
+          case 7:  PIEdisplayObject.cb07 = value; break;
+          case 8:  PIEdisplayObject.cb08 = value; break;
+          case 9:  PIEdisplayObject.cb09 = value; break;
+          case 10: PIEdisplayObject.cb10 = value; break;
+          case 11: PIEdisplayObject.cb11 = value; break;
+          case 12: PIEdisplayObject.cb12 = value; break;
+          case 13: PIEdisplayObject.cb13 = value; break;
+          case 14: PIEdisplayObject.cb14 = value; break;
+          case 15: PIEdisplayObject.cb15 = value; break;
+          case 16: PIEdisplayObject.cb16 = value; break;
+          case 17: PIEdisplayObject.cb17 = value; break;
+          case 18: PIEdisplayObject.cb18 = value; break;
+          case 19: PIEdisplayObject.cb19 = value; break;
+          default: break;
+        }
+        /* Update display */
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function changes the checkbox element on the Input panel
+ * <p>
+ * @param label      The label appearing on the checkbox element
+ * @param value      The new value of the checkbox
+ */
+function PIEchangeInputCheckbox(label, value)
+{
+var localO;
+var localI;
+
+    /* Find Checkbox Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEcbInput); localI++)
+    { if (PIEcbInputNames[localI] == label) { localO = PIEcbInputHandles[localI]; } }
+    /* Set value of Checkbox Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEinputObject.cb00 = value; break;
+          case 1:  PIEinputObject.cb01 = value; break;
+          case 2:  PIEinputObject.cb02 = value; break;
+          case 3:  PIEinputObject.cb03 = value; break;
+          case 4:  PIEinputObject.cb04 = value; break;
+          case 5:  PIEinputObject.cb05 = value; break;
+          case 6:  PIEinputObject.cb06 = value; break;
+          case 7:  PIEinputObject.cb07 = value; break;
+          case 8:  PIEinputObject.cb08 = value; break;
+          case 9:  PIEinputObject.cb09 = value; break;
+          case 10: PIEinputObject.cb10 = value; break;
+          case 11: PIEinputObject.cb11 = value; break;
+          case 12: PIEinputObject.cb12 = value; break;
+          case 13: PIEinputObject.cb13 = value; break;
+          case 14: PIEinputObject.cb14 = value; break;
+          case 15: PIEinputObject.cb15 = value; break;
+          case 16: PIEinputObject.cb16 = value; break;
+          case 17: PIEinputObject.cb17 = value; break;
+          case 18: PIEinputObject.cb18 = value; break;
+          case 19: PIEinputObject.cb19 = value; break;
+          default: break;
+        }
+        /* Update display */
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function accesses the status of the check box element on the input panel
+ * <p>
+ * @param label      The label appearing on the checkbox
+ * @return           The value in the checkbox
+ */
+function PIEgetDisplayCheckbox(label)
+{
+var found;
+var localI;
+var value;
+
+    /* Find Checkbox Element */
+    found = false;
+    for (localI = 0; (found == false) && (localI < PIEcbDisplay); localI++)
+    { if (PIEcbDisplayNames[localI] == label) { found = true; } }
+    /* Fetch value of Checkbox Element */
+    value = false;
+    if (found == true)
+    {
+        switch (localI - 1)
+        {
+          case 0:  value = PIEdisplayObject.cb00; break;
+          case 1:  value = PIEdisplayObject.cb01; break;
+          case 2:  value = PIEdisplayObject.cb02; break;
+          case 3:  value = PIEdisplayObject.cb03; break;
+          case 4:  value = PIEdisplayObject.cb04; break;
+          case 5:  value = PIEdisplayObject.cb05; break;
+          case 6:  value = PIEdisplayObject.cb06; break;
+          case 7:  value = PIEdisplayObject.cb07; break;
+          case 8:  value = PIEdisplayObject.cb08; break;
+          case 9:  value = PIEdisplayObject.cb09; break;
+          case 10: value = PIEdisplayObject.cb10; break;
+          case 11: value = PIEdisplayObject.cb11; break;
+          case 12: value = PIEdisplayObject.cb12; break;
+          case 13: value = PIEdisplayObject.cb13; break;
+          case 14: value = PIEdisplayObject.cb14; break;
+          case 15: value = PIEdisplayObject.cb15; break;
+          case 16: value = PIEdisplayObject.cb16; break;
+          case 17: value = PIEdisplayObject.cb17; break;
+          case 18: value = PIEdisplayObject.cb18; break;
+          case 19: value = PIEdisplayObject.cb19; break;
+          default: break;
+        }
+    }
+    return(value);
+}
+
+/**
+ * This function adds a command (button) to both the input and display GUI panels
+ * <p>
+ * The label is the id (label) appearing before the command.
+ * The notify function is called on command click.
+ * It in turn calls the PIEaddInputCommand and PIEaddDisplayCommand.
+ * <p>
+ * @param label      The label to appear on the checkbox element
+ * @param notify     The callback function to be called on checkbox click
+ */
+function PIEaddDualCommand(label, notify)
+{
+    PIEaddInputCommand(label, notify);
+    PIEaddDisplayCommand(label, notify);
+}
+
+/**
+ * This function adds a command element to the Display panel
+ * <p>
+ * The label is the id (label) appearing on the command button.
+ * <p>
+ * @param label      The label to appear on the command
+ * @param notify     The command function to be called
+ */
+function PIEaddDisplayCommand(label, notify)
+{
+var localO;
+
+    switch (PIEcDisplay)
+    {
+      case 0:  PIEdisplayObject.c00 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c00").name(label); break;
+      case 1:  PIEdisplayObject.c01 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c01").name(label); break;
+      case 2:  PIEdisplayObject.c02 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c02").name(label); break;
+      case 3:  PIEdisplayObject.c03 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c03").name(label); break;
+      case 4:  PIEdisplayObject.c04 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c04").name(label); break;
+      case 5:  PIEdisplayObject.c05 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c05").name(label); break;
+      case 6:  PIEdisplayObject.c06 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c06").name(label); break;
+      case 7:  PIEdisplayObject.c07 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c07").name(label); break;
+      case 8:  PIEdisplayObject.c08 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c08").name(label); break;
+      case 9:  PIEdisplayObject.c09 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c09").name(label); break;
+      case 10: PIEdisplayObject.c10 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c10").name(label); break;
+      case 11: PIEdisplayObject.c11 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c11").name(label); break;
+      case 12: PIEdisplayObject.c12 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c12").name(label); break;
+      case 13: PIEdisplayObject.c13 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c13").name(label); break;
+      case 14: PIEdisplayObject.c14 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c14").name(label); break;
+      case 15: PIEdisplayObject.c15 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c15").name(label); break;
+      case 16: PIEdisplayObject.c16 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c16").name(label); break;
+      case 17: PIEdisplayObject.c17 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c17").name(label); break;
+      case 18: PIEdisplayObject.c18 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c18").name(label); break;
+      case 19: PIEdisplayObject.c19 = notify; localO = PIEdisplayGUI.add(PIEdisplayObject, "c19").name(label); break;
+      default: return; break;
+    }
+    PIEcDisplayHandles.push(localO);
+    PIEcDisplayNames.push(label);
+    PIEcDisplay++;
+}
+
+/**
+ * This function adds a command element to the Input panel
+ * <p>
+ * The label is the id (label) appearing on the command button.
+ * <p>
+ * @param label      The label to appear on the command
+ * @param notify     The command function to be called
+ */
+function PIEaddInputCommand(label, notify)
+{
+var localO;
+
+    switch (PIEcInput)
+    {
+      case 0:  PIEinputObject.c00 = notify; localO = PIEinputGUI.add(PIEinputObject, "c00").name(label); break;
+      case 1:  PIEinputObject.c01 = notify; localO = PIEinputGUI.add(PIEinputObject, "c01").name(label); break;
+      case 2:  PIEinputObject.c02 = notify; localO = PIEinputGUI.add(PIEinputObject, "c02").name(label); break;
+      case 3:  PIEinputObject.c03 = notify; localO = PIEinputGUI.add(PIEinputObject, "c03").name(label); break;
+      case 4:  PIEinputObject.c04 = notify; localO = PIEinputGUI.add(PIEinputObject, "c04").name(label); break;
+      case 5:  PIEinputObject.c05 = notify; localO = PIEinputGUI.add(PIEinputObject, "c05").name(label); break;
+      case 6:  PIEinputObject.c06 = notify; localO = PIEinputGUI.add(PIEinputObject, "c06").name(label); break;
+      case 7:  PIEinputObject.c07 = notify; localO = PIEinputGUI.add(PIEinputObject, "c07").name(label); break;
+      case 8:  PIEinputObject.c08 = notify; localO = PIEinputGUI.add(PIEinputObject, "c08").name(label); break;
+      case 9:  PIEinputObject.c09 = notify; localO = PIEinputGUI.add(PIEinputObject, "c09").name(label); break;
+      case 10: PIEinputObject.c10 = notify; localO = PIEinputGUI.add(PIEinputObject, "c10").name(label); break;
+      case 11: PIEinputObject.c11 = notify; localO = PIEinputGUI.add(PIEinputObject, "c11").name(label); break;
+      case 12: PIEinputObject.c12 = notify; localO = PIEinputGUI.add(PIEinputObject, "c12").name(label); break;
+      case 13: PIEinputObject.c13 = notify; localO = PIEinputGUI.add(PIEinputObject, "c13").name(label); break;
+      case 14: PIEinputObject.c14 = notify; localO = PIEinputGUI.add(PIEinputObject, "c14").name(label); break;
+      case 15: PIEinputObject.c15 = notify; localO = PIEinputGUI.add(PIEinputObject, "c15").name(label); break;
+      case 16: PIEinputObject.c16 = notify; localO = PIEinputGUI.add(PIEinputObject, "c16").name(label); break;
+      case 17: PIEinputObject.c17 = notify; localO = PIEinputGUI.add(PIEinputObject, "c17").name(label); break;
+      case 18: PIEinputObject.c18 = notify; localO = PIEinputGUI.add(PIEinputObject, "c18").name(label); break;
+      case 19: PIEinputObject.c19 = notify; localO = PIEinputGUI.add(PIEinputObject, "c19").name(label); break;
+      default: return; break;
+    }
+    PIEcInputHandles.push(localO);
+    PIEcInputNames.push(label);
+    PIEcInput++;
+}
+
+/**
+ * This function changes a command on the Display panel
+ * <p>
+ * @param label      The original label appearing on the command
+ * @param newName    The new label to appear on the command
+ * @param notify     The new command function to be called
+ */
+function PIEchangeDisplayCommand(label, newName, notify)
+{
+var localO;
+var localI;
+
+    /* Find Command Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEcDisplay); localI++)
+    { if (PIEcDisplayNames[localI] == label) { localO = PIEcDisplayHandles[localI]; } }
+    /* Set value of Display Text Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEdisplayObject.c00 = notify; break;
+          case 1:  PIEdisplayObject.c01 = notify; break;
+          case 2:  PIEdisplayObject.c02 = notify; break;
+          case 3:  PIEdisplayObject.c03 = notify; break;
+          case 4:  PIEdisplayObject.c04 = notify; break;
+          case 5:  PIEdisplayObject.c05 = notify; break;
+          case 6:  PIEdisplayObject.c06 = notify; break;
+          case 7:  PIEdisplayObject.c07 = notify; break;
+          case 8:  PIEdisplayObject.c08 = notify; break;
+          case 9:  PIEdisplayObject.c09 = notify; break;
+          case 10: PIEdisplayObject.c10 = notify; break;
+          case 11: PIEdisplayObject.c11 = notify; break;
+          case 12: PIEdisplayObject.c12 = notify; break;
+          case 13: PIEdisplayObject.c13 = notify; break;
+          case 14: PIEdisplayObject.c14 = notify; break;
+          case 15: PIEdisplayObject.c15 = notify; break;
+          case 16: PIEdisplayObject.c16 = notify; break;
+          case 17: PIEdisplayObject.c17 = notify; break;
+          case 18: PIEdisplayObject.c18 = notify; break;
+          case 19: PIEdisplayObject.c19 = notify; break;
+          default: break;
+        }
+        /* Update name and display */
+        PIEcDisplayNames[localI - 1] = newName;
+        localO.name(newName);
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function changes a command on the Input panel
+ * <p>
+ * @param label      The original label appearing on the command
+ * @param newName    The new label to appear on the command
+ * @param notify     The new command function to be called
+ */
+function PIEchangeInputCommand(label, newName, notify)
+{
+var localO;
+var localI;
+
+    /* Find Command Element */
+    localO = null;
+    for (localI = 0; (localO == null) && (localI < PIEcInput); localI++)
+    { if (PIEcInputNames[localI] == label) { localO = PIEcInputHandles[localI]; } }
+    /* Set value of Input Text Element */
+    if (localO != null)
+    {
+        switch (localI - 1)
+        {
+          case 0:  PIEinputObject.c00 = notify; break;
+          case 1:  PIEinputObject.c01 = notify; break;
+          case 2:  PIEinputObject.c02 = notify; break;
+          case 3:  PIEinputObject.c03 = notify; break;
+          case 4:  PIEinputObject.c04 = notify; break;
+          case 5:  PIEinputObject.c05 = notify; break;
+          case 6:  PIEinputObject.c06 = notify; break;
+          case 7:  PIEinputObject.c07 = notify; break;
+          case 8:  PIEinputObject.c08 = notify; break;
+          case 9:  PIEinputObject.c09 = notify; break;
+          case 10: PIEinputObject.c10 = notify; break;
+          case 11: PIEinputObject.c11 = notify; break;
+          case 12: PIEinputObject.c12 = notify; break;
+          case 13: PIEinputObject.c13 = notify; break;
+          case 14: PIEinputObject.c14 = notify; break;
+          case 15: PIEinputObject.c15 = notify; break;
+          case 16: PIEinputObject.c16 = notify; break;
+          case 17: PIEinputObject.c17 = notify; break;
+          case 18: PIEinputObject.c18 = notify; break;
+          case 19: PIEinputObject.c19 = notify; break;
+          default: break;
+        }
+        /* Update name and display */
+        PIEcInputNames[localI - 1] = newName;
+        localO.name(newName);
+        localO.updateDisplay();
+    }
+}
+
+/**
+ * This function adds a button to the screen
+ * <p>
+ * This adds a button to the screen 
+ * The name is the id as well as the text appearing on the button.
+ * <p>
+ * @param name       The text to appear on the button
+ * @return           The creatd button
+ */
+function PIEaddButton(name)
+{
+var buttton;           /* The button element */
+
+    button = document.createElement('button');
+    button.setAttribute("id", name);
+    button.innerHTML = name;
+    PIEscreenElem.appendChild(button);
+    return(button);
+}
+
+/**
+ * This function sets the position of the camera.
+ * <p>
+ * The position of the camera is set.
+ * Then the camera is adjusted to look at the center of the area of interest.
+ * <p>
+ * In most cases, the (x,y) position of the camera should be set to center of area of interest.
+ * The z position of the camera should be such that the fov shpould cover the height.
+ * The aspect ratio of the camera should cover the width.
+ * <p>
+ * @param x  The x position of camera
+ * @param y  The y position of camera
+ * @param z  The z position of camera
+ */
+function PIEadjustCamera(x, y, z)
+{
+    PIEcamera.position.x = x;
+    PIEcamera.position.y = y;
+    PIEcamera.position.z = z;
+}
+
+/**
+ * This function turns the camera to point towards the given point.
+ * <p>
+ * The camera is adjusted to look at the specified position
+ * <p>
+ * @param x  The x position of target
+ * @param y  The y position of target
+ * @param z  The z position of target
+ */
+function PIEturnCamera(x, y, z)
+{
+    PIEcameraTarget.x = x;
+    PIEcameraTarget.y = y;
+    PIEcameraTarget.z = z;
+    PIEcamera.lookAt(PIEcameraTarget);
+}
+
+/**
+ * This function sets the aspect ratio of the camera
+ * <p>
+ * The field of view (fov) specifies the vertical angle of the frustum.
+ * The frustum vertical limits are defined by the fov.
+ * <p>
+ * The frustum horizontal limits are defined by the fov and the aspect ratio.
+ * <p>
+ * The frustum depth is defined by the far specification.
+ * <p>
+ * If the camera is loking at the center of the scene,
+ * the aspect ratio shuld be the aspect ratio of the display scene
+ * <p>
+ * @param aspect     The aspect ration of camera
+ */
+function PIEsetCameraAspect(aspect)
+{
+    PIEcameraAspect  = aspect;
+    PIEcamera.aspect = aspect;
+}
+
+/**
+ * This function sets the field of view (fov) of the camera
+ * <p>
+ * The field of view specifies the vertical angle of the frustum.
+ * The frustum vertical limits are defined by the fov.
+ * <p>
+ * The frustum horizontal limits are defined by the fov and the aspect ratio.
+ * <p>
+ * The frustum depth is defined by the far specification.
+ * <p>
+ * If the camera is loking at the center of the scene,
+ * the aspect ratio shuld be the aspect ratio of the display scene
+ * <p>
+ * @param fov     The field of view (vertical) of camera
+ */
+function PIEsetCameraFOV(fov)
+{
+    PIEcameraAngle = fov;
+    PIEcamera.fov  = fov;
+}
+
+/**
+ * This function sets the depth of the camera
+ * <p>
+ * The frustum depth is defined by the far specification.
+ * The camera does not see beyond this depth.
+ * <p>
+ * The field of view specifies the vertical angle of the frustum.
+ * The frustum vertical limits are defined by the fov.
+ * <p>
+ * The frustum horizontal limits are defined by the fov and the aspect ratio.
+ * <p>
+ * If the camera is loking at the center of the scene,
+ * the aspect ratio shuld be the aspect ratio of the display scene
+ * <p>
+ * @param depth     The depth of camera frustum
+ */
+function PIEsetCameraDepth(depth)
+{
+    PIEcamera.far = depth;
+}
+
+/**
+ * This function sets the area of interest in xy plane (z=0) of the scene.
+ * <p>
+ * Note : This area will always be displayed on the center of the display area.
+ * The library will change the aspect ratio and position of the camera such that
+ * the aspect ratio matches the canvas and the area is fully visible.
+ * The library will ensure that resize of display is automatically taken care of.
+ * <p>
+ * The area of interest varibles will be set and the aspect ration of computed
+ * <p>
+ * The display scene variables will be computed such that the area of interest is visible and will occupy maximum display.
+ * The area of interest will occupy the center of the screen.
+ * The aspect ratio of the display scene will match the aspect ration of the display element.
+ * <p>
+ * The camera will be positioned such that it will look right down at the center of the area.
+ * The camera z coordinate will be such that the area is visible and will occupy maximum display.
+ * The camera aspect ratio will continue to be equal to the aspect ratio of the screen element
+ * <p>
+ * @param tlX        The top left x coordinate of the scene (area of interest)
+ * @param tlY        The top left y coordinate of the scene (area of interest)
+ * @param brX        The bottom right x coordinate of the scene (area of interest)
+ * @param brY        The bottom right y coordinate of the scene (area of interest)
+ */
+function PIEsetAreaOfInterest(tlX, tlY, brX, brY)
+{
+    PIEaoiTLX = tlX;
+    PIEaoiTLY = tlY;
+    PIEaoiBRX = brX;
+    PIEaoiBRY = brY;
+    PIEaoiW   = brX - tlX;
+    PIEaoiH   = tlY - brY;
+    PIEaoiAspect = PIEaoiW / PIEaoiH;
+    PIEcameraAngle = 30;
+    PIEcameraZ = ((PIEaoiH / 2) / Math.tan((PIEcameraAngle*Math.PI/180.0)/2))
+    PIEadjustDisplayScene();
+}
+
+/**
+ * This function adjusts the area of the scene which will be displayed on the screen.
+ * <p>
+ * The function will be called whenever the area of interest changes or when the display screen is resized.
+ * <p>
+ * The display scene variables will be computed such that the area of interest is visible and will occupy maximum display.
+ * The area of interest will occupy the center of the screen.
+ * The aspect ratio of the display scene will match the aspect ration of the display element.
+ * <p>
+ * The camera will be positioned such that it will look right down at the center of the area.
+ * The camera z coordinate will be such that the area is visible and will occupy maximum display.
+ * The camera aspect ratio will continue to be equal to the aspect ratio of the screen element
+ */
+function PIEadjustDisplayScene()
+{
+var adjustX;        /* The X adjustment needed to corners */
+var adjustY;        /* The Y adjustment needed to corners */
+
+    adjustX = 0.0;
+    adjustY = 0.0;
+    if (PIEcanvasAspect > PIEaoiAspect)
+    {   /* Display element wider than scene */
+        /* Display scene should be wider than area of interest */
+        adjustX  = PIEcanvasAspect * (PIEaoiTLY - PIEaoiBRY) - (PIEaoiBRX - PIEaoiTLX);
+        adjustX /= 2.0;
+    }
+    else if (PIEcanvasAspect < PIEaoiAspect)
+    {   /* Display element taller than scene */
+        /* Display scene should be taller than area of interest */
+        adjustY  = (PIEaoiBRX - PIEaoiTLX) / PIEcanvasAspect - (PIEaoiTLY - PIEaoiBRY);
+        adjustY /= 2.0;
+    }
+    else if (PIEcanvasAspect < PIEaoiAspect)
+    {   /* Display element taller than scene */
+        /* Display scene should be taller than area of interest */
+        adjustY  = (PIEaoiBRX - PIEaoiTLX) / PIEcanvasAspect - (PIEaoiTLY - PIEaoiBRY);
+        adjustY /= 2.0;
+    }
+    /* Display scene adjustment */
+    PIEdisplayTLX = PIEaoiTLX - adjustX;
+    PIEdisplayTLY = PIEaoiTLY + adjustY;
+    PIEdisplayBRX = PIEaoiBRX + adjustX;
+    PIEdisplayBRY = PIEaoiBRY - adjustY;
+    PIEdisplayW   = PIEaoiW + 2 * adjustX;
+    PIEdisplayH   = PIEaoiH + 2 * adjustY;
+    PIEdisplayAspect = PIEdisplayW / PIEdisplayH;
+
+    /* Camera adjustment */
+    PIEadjustCamera(PIEdisplayTLX + PIEdisplayW / 2,
+                    PIEdisplayBRY + PIEdisplayH / 2,
+                    PIEcameraZ);
+    PIEturnCamera(PIEdisplayTLX + PIEdisplayW / 2,
+                  PIEdisplayBRY + PIEdisplayH / 2,
+                  0.0);
+    PIEsetCameraFOV(2 * Math.atan((PIEdisplayH / 2) / PIEcameraZ) * 180 / Math.PI);
+    PIEsetCameraAspect(PIEdisplayAspect);
+}
+
+/**
+ * This function adds a user defined element to the scene.
+ * <p>
+ * By default the element is made to receive and cast shadow.
+ * <p>
+ * For every PIE object : hover (ON/OFF) and drag (start,drag,end) are set to null as deault.
+ * Default menthods are provided for all five events.
+ * The  developer can supply special methods (if he wants to restrict drag or drag a ggroup)
+ * <p>
+ * The element is also added to the array of elements maintained by the library.
+ * <p>
+ * @param element    The element created by the user
+ * @return           The element ID maintained by thhe library (index into array)
+ */
+function PIEaddElement(element)
+{
+    /* Default attributes */
+    element.receiveShadow = true;
+    element.castShadow    = true;
+    /* Add element to Scene */
+    PIEscene.add(element);
+    /* Default methods set to null */
+    element.dragStart = null;
+    element.drag      = null;
+    element.dragEnd   = null;
+    element.hoverON   = null;
+    element.hoverOFF  = null;
+    /* Add to array */
+    PIEsceneElements.push(element);
+    /* return array Index */
+    return (PIEsceneElements.length - 1);
+}
+
+/**
+ * This function handles the beginning of an animation cycle
+ * <p>
+ * This is called when the user presses the (library provided) start button.
+ * <p>
+ * It stops the animation (if any).
+ * It then calls the developer supplied resetExperiment function.
+ */
+function PIEresetExperiment()
+{
+    PIEstopAnimation();
+    PIEanimationSpeed = 1.0;
+    PIEspeedElem.innerHTML = PIEanimationSpeed;
+    resetExperiment();
+    PIEshowInputPanel();
+    PIErender();
+}
+
+/**
+ * This function speeds up animation speed
+ * <p>
+ * This is called when the user presses the (library provided) >> button.
+ * <p>
+ * The PIEanimationSpeed is changed to next higher speed.
+ */
+function PIEspeedupAnimation()
+{
+    if (PIEanimationSpeed < PIEmaxAnimationSpeed) { PIEanimationSpeed *= 2; }
+    PIEspeedElem.innerHTML = PIEanimationSpeed;
+}
+
+/**
+ * This function slows down animation speed
+ * <p>
+ * This is called when the user presses the (library provided) << button.
+ * <p>
+ * The PIEanimationSpeed is changed to next lower speed.
+ */
+function PIEslowdownAnimation()
+{
+    if (PIEanimationSpeed > PIEminAnimationSpeed) { PIEanimationSpeed /= 2; }
+    PIEspeedElem.innerHTML = PIEanimationSpeed;
+}
+
+/**
+ * This function starts a fresh animation cycle
+ * <p>
+ * This is called when the user presses the (library provided) reset button.
+ * <p>
+ * The animation start time is set to the current date.
+ * The animation current time (t) is set to 0.
+ * The animation offset time (dt) is set to 0.
+ * The animation cycle is started.
+ * The pause/resume button is made visible pause mode.
+ * The start/stop function changes to stop mode.
+ * The current animation speed has no effect.
+ */
+function PIEstartAnimation()
+{
+    if (PIEanimationON == false)
+    {
+        PIElastUpdateTime = Date.now();
+        PIEpauseOffset = 0.0;
+        PIEcurrentTime = 0.0;
+        PIEoffsetTime  = 0.0;
+        PIEanimationON = true;
+
+        /* Enable Pause */
+        PIEanimationPaused = false;
+        PIEresumeButton.style.display = "none";
+        PIEresumeButton.style.visibility = "hidden";
+        PIEpauseButton.style.display = "inline";
+        PIEpauseButton.style.visibility = "visible";
+
+        /* Enable stop */
+        PIEstartButton.style.display = "none";
+        PIEstopButton.style.display = "inline";
+
+	PIEshowDisplayPanel();
+        PIEanimate();
+    }
+}
+
+/**
+ * This function stops an animation cycle
+ * <p>
+ * This is called when the user presses the (library provided) stop button.
+ * <p>
+ * The animation start time is set to 0;
+ * The animation current time is set to 0.
+ * The animation offset time is set to 0.
+ * The animation cycle is stopped.
+ * The pause/resume button is hidden.
+ * The start/stop function changes to start mode.
+ * The current animation speed has no effect.
+ * <p>
+ * The PIEanimate function will be called one more time but will do nothing.
+ */
+function PIEstopAnimation()
+{
+    if (PIEanimationON == true)
+    {
+        PIEpauseOffset = 0.0;
+        PIEcurrentTime = 0.0;
+        PIEoffsetTime  = 0.0;
+        PIEanimationON = false;
+
+        /* Enable Pause */
+        PIEanimationPaused = false;
+        PIEresumeButton.style.display = "none";
+        PIEresumeButton.style.visibility = "hidden";
+        PIEpauseButton.style.display = "inline";
+        PIEpauseButton.style.visibility = "hidden";
+
+        /* Enable start */
+        PIEstopButton.style.display = "none";
+        PIEstartButton.style.display = "inline";
+
+	PIEshowInputPanel();
+    }
+}
+
+/**
+ * This function is called at every frame of an animation cycle
+ * <p>
+ * The actual time Date.now() is obtained.
+ * The current animation time is calculated by subtracting the animation start time.
+ * The offset time (from last call) is calculated using the current animation speed.
+ * The current animation speed has no effect.
+ * User supplied updatePosition function is called with animation time and ffset time.
+ * Finally the scene is rendered.
+ * <p>
+ * As a matter of precaution, there is no processing if the animationON flag is reset
+ * or if the animationPause flag is set.
+ * Ordinarily the flags would have proper value.
+ */
+function PIEanimate()
+{
+var currentTime;        /* The current real (date.now()) time */
+var dt;                 /* The offset time since last call (variable dt in functions) */
+
+    if ((PIEanimationON == true) && (PIEanimationPaused == false))
+    {
+        /* Calculate time variables */
+        currentTime = Date.now();
+	dt = (currentTime - PIElastUpdateTime) * PIEanimationSpeed;
+	if (dt > 0)
+	{
+            PIEcurrentTime += dt;
+            PIEoffsetTime   = dt;
+            PIElastUpdateTime = currentTime;
+	    updateExperimentElements(PIEcurrentTime, PIEoffsetTime);
+	}
+	/* Request next Frame */
+	requestAnimationFrame(PIEanimate);
+	/* Render the scene */
+        PIErender();
+    }
+}
+
+/**
+ * This function renders the modified scene.
+ * <p>
+ * The function uis separated to allow calling outside the animation cycle as well.
+ * For example, the window resize operation needs to render the scene after adjusting the camera and renderer.
+ */
+function PIErender()
+{
+    PIErenderer.render(PIEscene, PIEcamera);
+}
+
+/**
+ * This function pauses an animation cycle
+ * <p>
+ * This is called when the user presses the (library provided) pause button.
+ * <p>
+ * The animation cycle is paused by setting the paused flag.
+ * The pause/resume button is set to resume mode.
+ * <p>
+ * The PIEanimate function will be called one more time but will do nothing.
+ */
+function PIEpauseAnimation()
+{
+var currentTime;        /* The current real (date.now()) time */
+
+    if ((PIEanimationON == true) && (PIEanimationPaused == false))
+    {
+        /* Store offset Time for resume */
+        currentTime = Date.now();
+	PIEpauseOffset = (currentTime - PIElastUpdateTime);
+	
+        /* Enable Resume */
+        PIEpauseButton.style.display = "none";
+        PIEpauseButton.style.visibility = "hidden";
+        PIEresumeButton.style.display = "inline";
+        PIEresumeButton.style.visibility = "visible";
+        PIEanimationPaused = true;
+    }
+}
+
+/**
+ * This function restarts an animation cycle
+ * <p>
+ * This is called when the user presses the (library provided) resume button.
+ * <p>
+ * The pause/resume button is set to pause mode.
+ * The animation cycle is resumed by resettng the paused flag.
+ * The animation start time is advanced by the amount of time the animation cycle was paused.
+ * The PIEanimate function is called to resume animation.
+ */
+function PIEresumeAnimation()
+{
+var currentTime;        /* The current (Date.Now()) Time */
+
+    if ((PIEanimationON == true) && (PIEanimationPaused == true))
+    {
+        /* Enable pause */
+        PIEpauseButton.style.display = "inline";
+        PIEpauseButton.style.visibility = "visible";
+        PIEresumeButton.style.display = "none";
+        PIEresumeButton.style.visibility = "hidden";
+
+        /* Resume Animation adjusting for pause Offset */
+        currentTime = Date.now();
+        PIElastUpdateTime = currentTime - PIEpauseOffset;
+        PIEanimationPaused = false;
+        PIEanimate();
+    }
+}
+
+/**
+ * This function adjusts the simulation time
+ * <p>
+ * This is called when the experiment desires to change the simulation time.
+ * Typically whenever a boundary condtion (change of direction, collision) is
+ * detected, the simulation should stop and proceed from that time.
+ * <p>
+ * The animation current time is reduced.
+ * <p>
+ * @param  dt    The time difference by which animation has to be reset
+ */
+function PIEadjustAnimationTime(dt)
+{
+    /* Adjust Time */
+    PIEcurrentTime -= dt;
+}
+
+/**
+ * This function is the default library action for hoverON
+ * <p>
+ * This can poentially highlight the element.
+ * Currently there is no default action.
+ * If the developer has specified any method, it is called.
+ * <p>
+ * @param element    The PIE element to which mouseover method is attached
+ */
+function PIEdefaultHoverON(element)
+{
+    if ((element != null) && ((element.hoverON) != null)) { element.hoverON(element); }
+    PIErender();
+}
+
+/**
+ * This function is the default library action for hoverOFF
+ * <p>
+ * This can poentially de-highlight the element.
+ * Currently there is no default action.
+ * If the developer has specified any method, it is called.
+ * <p>
+ * @param element    The PIE element to which mouseover method is attached
+ */
+function PIEdefaultHoverOFF(element)
+{
+    if ((element != null) && ((element.hoverOFF) != null)) { element.hoverOFF(element); }
+    PIErender();
+}
+
+/**
+ * This function is the default library action for drag start
+ * <p>
+ * Currently there is no default action.
+ * If the developer has specified any drag start method, it is called.
+ * Typically one can store  initial values and other information.
+ * <p>
+ * @param element    The PIE element to which drag method is attached
+ */
+function PIEdefaultDragStart(element)
+{
+    if ((element.dragStart) != null) { element.dragStart(element); }
+    PIErender();
+}
+
+/**
+ * This function is the default library action for drag
+ * <p>
+ * The default action is to move the dragged element to the new position.
+ * If the developer has specified any drag method, it is called with the new position.
+ * Typically one can move multiple elements, implement restricted motion etc.
+ * <p>
+ * @param element    The PIE element to which drag method is attached
+ * @param newpos     The new 3D position of the dragged element
+ */
+function PIEdefaultDrag(element, newpos)
+{
+    if ((element.drag) != null) { element.drag(element, newpos); }
+    else { element.position.x = newpos.x; element.position.y = newpos.y; element.position.z = newpos.z; }
+    PIErender();
+}
+
+/**
+ * This function is the default library action for drag end
+ * <p>
+ * there is no default action.
+ * If the developer has specified any drag end method, it is called with the new position.
+ * Typically one can move multiple elements, implement restricted motion etc.
+ * <p>
+ * @param element    The PIE element to which drag method is attached
+ */
+function PIEdefaultDragEnd(element)
+{
+    if ((element.dragEnd) != null) { element.dragEnd(element); }
+    PIErender();
+}
+
+/**
+ * This function sets the hoverON method for a PIE element
+ * <p>
+ * @param element    The PIE element to which mouseover method is attached
+ * @param method     The hoverON method
+ */
+function PIEsetHoverON(element, method)
+{
+    element.hoverON = method;
+}
+
+/**
+ * This function sets the hoverOFF method for a PIE element
+ * <p>
+ * @param element    The PIE element to which mouseover method is attached
+ * @param method     The hoverOFF method
+ */
+function PIEsetHoverOFF(element, method)
+{
+    element.hoverOFF = method;
+}
+
+/**
+ * This function sets the drag Start method for a PIE element
+ * <p>
+ * @param element    The PIE element to which drag method is attached
+ * @param method     The drag method
+ */
+function PIEsetDragStart(element, method)
+{
+    element.dragStart = method;
+}
+
+/**
+ * This function sets the drag method for a PIE element
+ * <p>
+ * @param element    The PIE element to which drag method is attached
+ * @param method     The drag method
+ */
+function PIEsetDrag(element, method)
+{
+    // console.log("Drag set on element ", element);
+    element.drag = method;
+}
+
+/**
+ * This function sets the drag End method for a PIE element
+ * <p>
+ * @param element    The PIE element to which drag method is attached
+ * @param method     The drag method
+ */
+function PIEsetDragEnd(element, method)
+{
+    // console.log("Drag end set on element ", element);
+    element.dragEnd = method;
+}
+
+/**
+ * This function marks a user defined element for drag-drop operation
+ * <p>
+ * The library maintains an array of items which can be dragged and dropped.
+ * The element is added to this array.
+ * Whenever mouse down event happens, the library determines whether the mouse
+ * is on any of the elements listed in the array.
+ * If the mouse is on any such element, the element is marked as the drag
+ * element and it's drag handler is called on mouse move.
+ * <p>
+ * @param element    The element created by the user
+ * @return           The element ID maintained by thhe library (index into array)
+ */
+function PIEdragElement(element)
+{
+    PIEdragElements.push(element);
+}
+
+/**
+ * This function handles the mouse move event.
+ * <p>
+ * The mouse coordinates are normalised (-1 to +1) to canvas dimensions
+ * <p>
+ * If an element is being dragged, the drag method of the element is called.
+ * It could be either the default method or a user supplied method.
+ * <p>
+ * Oherwise, if the mouse is on any element,
+ * the mouseover method of the nearest element is called (if any).
+ * <p>
+ * @param event      The mouse down event
+ */
+function PIEmouseMove( event )
+{
+var intersects;     // to hold return array of ray intersects
+
+    event.defaultPrevented = true;
+
+    PIEmouseP.x = ( event.clientX / PIEcanvasW ) * 2 - 1;
+    PIEmouseP.y = - ( event.clientY / PIEcanvasH ) * 2 + 1;
+
+    /* Cast the ray to find intersecting objects */
+    PIEraycaster.setFromCamera(PIEmouseP, PIEcamera);
+
+    if (PIEselectedDrag != null)
+    {   /* Drag the element */
+        PIEraycaster.ray.intersectPlane(PIEdragPlane, PIEdragIntersect);
+	PIEdefaultDrag(PIEselectedDrag, PIEdragIntersect.sub(PIEdragOffset)); 
+    }
+    else
+    {   /* If possible Call hoveron method of the nearest element */
+        intersects = PIEraycaster.intersectObjects(PIEdragElements);
+        if (intersects.length > 0)
+        {
+            PIEdragPlane.setFromNormalAndCoplanarPoint(PIEcamera.getWorldDirection(PIEdragPlane.normal), intersects[0].object.position);
+            if (PIEselectedHover != intersects[0].object)
+            {
+                PIEdefaultHoverOFF(PIEselectedHover);
+                PIEselectedHover = intersects[0].object;
+                PIEdefaultHoverON(PIEselectedHover);
+            }
+            PIEscreenElem.style.cursor = 'pointer';
+        }
+	else if (PIEselectedHover != null)
+        {
+            PIEdefaultHoverOFF(PIEselectedHover);
+            PIEselectedHover = null;
+            PIEscreenElem.style.cursor = 'auto';
+        }
+    }
+}
+
+/**
+ * This function handles the mouse down event.
+ * <p>
+ * If the mouse is on any draggable element, It is selected for Dragging
+ * <p>
+ * The function locates the draggable element (nearest to camera) on which the mouse is positioned.
+ * <p>
+ * If a draggable element is found, the function marks it as current drag element
+ * If no draggable element is found, the function exits without any action
+ * <p>
+ * @param event      The mouse down event
+ */
+function PIEmouseDown( event )
+{
+var intersects;     // to hold return array of ray intersects
+
+    // console.log("Mouse Down at ", PIEmouseP);
+    event.defaultPrevented = true;
+    PIEselectedDrag = null;
+
+    PIEraycaster.setFromCamera(PIEmouseP, PIEcamera);
+    intersects = PIEraycaster.intersectObjects(PIEdragElements);
+    if (intersects.length > 0) {
+        PIEselectedDrag = intersects[0].object;
+        if (PIEraycaster.ray.intersectPlane(PIEdragPlane, PIEdragIntersect))
+	{
+            PIEdragOffset.copy(PIEdragIntersect).sub(PIEselectedDrag.position);
+        }
+        PIEscreenElem.style.cursor = 'move';
+	PIEdefaultDragStart(PIEselectedDrag);
+    }
+}
+
+/**
+ * This function handles the mouse up event.
+ * <p>
+ * If the mouse is on any element, the highlight method of the element is called (if any)
+ * <p>
+ * First the function tries to locate the element (nearest to calmera) on which the mouse is positioned.
+ * If the element is not on the draggable list, the function recursively finds the next nearest draggable element.
+ * <p>
+ * If a draggable element is found, the function marks itas current drag element
+ * If no draggable element is found, the unction exits without any action
+ * <p>
+ * @param event      The mouse up event
+ */
+function PIEmouseUp( event )
+{
+var intersects;     // to hold return array of ray intersects
+
+    event.defaultPrevented = true;
+    if (PIEselectedDrag != null)
+    {
+	PIEdefaultDragEnd(PIEselectedDrag);
+        PIEselectedDrag = null;
+    }
+    PIEscreenElem.style.cursor = 'auto';
+}
+
