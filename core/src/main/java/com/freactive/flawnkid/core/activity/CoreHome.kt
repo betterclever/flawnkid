@@ -6,12 +6,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.graphics.Point
 import android.graphics.PointF
 import android.net.Uri
 import android.os.Build
+import java.util.Timer
+import kotlin.concurrent.schedule
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -538,6 +543,8 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
         return if (opts != null) opts.toBundle() else null
     }
 
+
+
     @JvmOverloads
     open fun onStartApp(context: Context, intent: Intent, view: View? = null) = try {
         context.startActivity(intent, getActivityAnimationOpts(view))
@@ -547,13 +554,39 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
         Tool.toast(context, R.string.toast_app_uninstalled)
     }
 
+    fun killAppBypackage(packageTokill: String){
+        val pm: PackageManager = getPackageManager()
+        val packages = pm.getInstalledApplications(0)
+
+
+        val mActivityManager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val myPackage = getApplicationContext().getPackageName()
+
+        for (packageInfo in packages) {
+
+            if(packageInfo.packageName.equals(myPackage)) {
+                continue;
+            }
+            if(packageInfo.packageName.equals(packageTokill)) {
+                mActivityManager.killBackgroundProcesses(packageInfo.packageName);
+            }
+
+        }
+
+    }
+
     @JvmOverloads
     open fun onStartApp(context: Context, app: AbstractApp, view: View? = null) = try {
         val intent = Intent(Intent.ACTION_MAIN)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.setClassName(app.packageName, app.className)
 
-        context.startActivity(intent, getActivityAnimationOpts(view))
+        Timer("",false).schedule(5000) { Log.d("akshat","aaya")
+            Setup.appSettings().appRestartRequired = false
+
+        }
+
+        startActivityForResult(intent,100, getActivityAnimationOpts(view))
 
         CoreHome.consumeNextResume = true
     } catch (e: Exception) {

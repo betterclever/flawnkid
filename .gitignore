@@ -1,0 +1,14 @@
+# Created by .ignore support plugin (hsz.mobi)
+.gitignore
+.gradle/
+.idea/
+build/android-profile/profile-2018-03-17-06-27-10-806.json
+build/android-profile/profile-2018-03-17-06-27-10-806.rawproto
+build/android-profile/profile-2018-03-17-06-28-10-195.json
+build/android-profile/profile-2018-03-17-06-28-10-195.rawproto
+build/android-profile/profile-2018-03-17-06-31-12-269.json
+build/android-profile/profile-2018-03-17-06-31-12-269.rawproto
+build/android-profile/profile-2018-03-17-06-31-25-678.json
+build/android-profile/profile-2018-03-17-06-31-25-678.rawproto
+build/kotlin/
+flawnkid.iml
