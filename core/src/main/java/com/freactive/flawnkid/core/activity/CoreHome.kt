@@ -6,12 +6,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.graphics.Point
 import android.graphics.PointF
 import android.net.Uri
 import android.os.Build
+import java.util.Timer
+import kotlin.concurrent.schedule
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -538,6 +543,8 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
         return if (opts != null) opts.toBundle() else null
     }
 
+
+
     @JvmOverloads
     open fun onStartApp(context: Context, intent: Intent, view: View? = null) = try {
         context.startActivity(intent, getActivityAnimationOpts(view))
@@ -553,7 +560,13 @@ abstract class CoreHome : Activity(), Desktop.OnDesktopEditListener, DesktopOpti
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.setClassName(app.packageName, app.className)
 
-        context.startActivity(intent, getActivityAnimationOpts(view))
+        Timer("",false).schedule(5000) {
+            val i = Intent(Intent.ACTION_MAIN)
+            i.addCategory(Intent.CATEGORY_HOME)
+            startActivity(i)
+        }
+
+        startActivity(intent, getActivityAnimationOpts(view))
 
         CoreHome.consumeNextResume = true
     } catch (e: Exception) {
