@@ -6,6 +6,7 @@ contract GameContest {
   struct StakeHolder {
     address addr;
     uint amount;
+    bool claimed;
   }
 
   struct Submission {
@@ -34,7 +35,7 @@ contract GameContest {
     gameIdeaID = numGameIdeas++; 
     gameIdeas[gameIdeaID] = GameIdea(topic, description, 0, 0, 0);
     GameIdea g = gameIdeas[gameIdeaID];
-    g.stakeHolders[g.numStakeHolders++] = StakeHolder({addr: msg.sender, amount: msg.value});
+    g.stakeHolders[g.numStakeHolders++] = StakeHolder({addr: msg.sender, amount: msg.value, claimed: false});
     g.amount += msg.value;
   }
 
@@ -48,11 +49,35 @@ contract GameContest {
     );
   }
 
-  
+  function buySubmission(uint gameIdeaID, uint submissionID) returns(bool status) {
+    GameIdea idea = gameIdeas[gameIdeaID];
+    Submission s = idea.submissions[submissionID];
+    
+
+    for (uint index = 0; index < idea.numStakeHolders; index++) {
+      StakeHolder st = idea.stakeHolders[index];
+      if(st.addr == msg.sender) {
+        if(!st.claimed) {
+          s.addr.send(st.amount);
+          idea.amount -= st.amount;
+          idea.numStakeHolders -= 1;
+          st.claimed = true;
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+
+    return false;
+
+  }
   
   function addStake(uint gameIdeaID) {
     GameIdea c = gameIdeas[gameIdeaID];
-    c.stakeHolders[c.numStakeHolders++] = StakeHolder({addr: msg.sender, amount: msg.value});
+    c.stakeHolders[c.numStakeHolders++] = StakeHolder({addr: msg.sender, amount: msg.value, claimed: false});
     c.amount += msg.value;
   }
 
