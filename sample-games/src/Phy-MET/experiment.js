@@ -14,7 +14,8 @@ var myCenterY;
 
 var wallThickness;
 var myBack;             
-    
+
+
 var line;
 var line1;
 var line1a;
@@ -214,7 +215,25 @@ function initialiseOtherVariables()
 function StartEX() {
     Glo = 0;
     Q1();
+    Qq.style.visibility = "hidden";
+
+    inputF.style.visibility = "hidden";
+    inputF1.style.visibility = "hidden";
+    inputF2.style.visibility = "hidden";
+    inputF3.style.visibility = "hidden";
+
+    A1.style.visibility = "hidden";
+    A2.style.visibility = "hidden";
+    A3.style.visibility = "hidden";
+    A4.style.visibility = "hidden";
+
+    NextQuestionButton.style.visibility = "hidden";
+    ExperimentButton.style.visibility = "hidden";
     button1.style.visibility = "visible";
+
+    CA.style.visibility = "hidden";
+    WA.style.visibility = "hidden";
+
     line3a.scale.set(1, 1, 1);
     battery.scale.set(1, 1, 1);
     battery1.scale.set(1, 1, 1);
@@ -265,24 +284,196 @@ function StartEX() {
 }
 function TesterQuiz() {
     PIEresetExperiment();
+    Glo = 1;
+    Qq.style.visibility = "visible";
+
+    inputF.style.visibility = "visible";
+    inputF1.style.visibility = "visible";
+    inputF2.style.visibility = "visible";
+    inputF3.style.visibility = "visible";
+
+    A1.style.visibility = "visible";
+    A2.style.visibility = "visible";
+    A3.style.visibility = "visible";
+    A4.style.visibility = "visible";
+
+    NextQuestionButton.style.visibility = "visible";
+    ExperimentButton.style.visibility = "visible";
+    button1.style.visibility = "hidden";
+
+    line3a.scale.set(0, 0, 0);
+    battery.scale.set(0, 0, 0);
+    battery1.scale.set(0, 0, 0);
+    batteryT.scale.set(0, 0, 0);
+    battery2.scale.set(0, 0, 0);
+    battery2b.scale.set(0, 0, 0);
+    battery2T.scale.set(0, 0, 0);
+    resistor.scale.set(0, 0, 0);
+    res.scale.set(0, 0, 0);
+    L.scale.set(0, 0, 0);
+    L1.scale.set(0, 0, 0);
+    L2.scale.set(0, 0, 0);
+    L3.scale.set(0, 0, 0);
+    L4.scale.set(0, 0, 0);
+    switchB.scale.set(0, 0, 0);
+    D1.scale.set(0, 0, 0);
+    D2.scale.set(0, 0, 0);
+    Magnet.scale.set(0, 0, 0);
+    compass.scale.set(0, 0, 0);
+    innerCircle.scale.set(0, 0, 0);
+    wire.scale.set(0, 0, 0);
+    wire1.scale.set(0, 0, 0);
+    wire2.scale.set(0, 0, 0);
+    REStext.style.visibility = "hidden";
+    REStext1.style.visibility = "hidden";
+    REStext2.style.visibility = "hidden";
+    REStext1a.style.visibility = "hidden";
+    REStext2a.style.visibility = "hidden";
+    Bulb.scale.set(0, 0, 0);
+    BulbH.scale.set(0, 0, 0);
+    BulbB.scale.set(0, 0, 0);
+    needle.scale.set(0, 0, 0);
+    needle1.scale.set(0, 0, 0);
+    line.scale.set(0, 0, 0);
+    line1.scale.set(0, 0, 0);
+    line2.scale.set(0, 0, 0);
+    line1a.scale.set(0, 0, 0);
+    sl.scale.set(0, 0, 0);
+    GS.style.visibility = "hidden";
+    GSF.style.visibility = "hidden";
+    aro.scale.set(0, 0, 0);
+    dir.scale.set(0, 0, 0);
+    aro1.scale.set(0, 0, 0);
+    aroR1.scale.set(0, 0, 0);
+    aroR.scale.set(0, 0, 0);
+    dirR.scale.set(0, 0, 0);
+    PIErender();
+}
+function EndQuiz(){
+    alert("Your Score is "  +  score + " Out of 4");
 }
 function Q4() {
-    
+    Qq.innerHTML = "<h3><b>The magnetic neddle gets deflected in the - </b></h3>";
+    A1.innerHTML = "<h3><b>Direction of current flowing</b></h3>";
+    A2.innerHTML = "<h3><b>Opposite to the direction of current flowing</b></h3>";
+    A3.innerHTML = "<h3><b>Does not deflect in fixed direction</b></h3>";
+    A4.innerHTML = "<h3><b>Will not deflect</b></h3>";
+
+    CA.style.visibility = "hidden";
+    WA.style.visibility = "hidden";
+
+    inputF.checked = false;
+    inputF1.checked = false;
+    inputF2.checked = false;
+    inputF3.checked = false;
+
+    inputF.removeEventListener("click", wrongA);
+    inputF1.removeEventListener("click", wrongA);
+    inputF2.removeEventListener("click", wrongA);
+    inputF3.removeEventListener("click", correctA);
+    NextQuestionButton.removeEventListener("click", Q4);
+
+    inputF.addEventListener("click", correctA);
+    inputF1.addEventListener("click", wrongA);
+    inputF2.addEventListener("click", wrongA);
+    inputF3.addEventListener("click", wrongA);
+    NextQuestionButton.addEventListener("click", EndQuiz);
+    // alert("Your Score is "  +  score + " Out of 4");
 }
 function Q3() {
+    Qq.innerHTML = "<h3><b>The magnetic neddle gets deflected - </b></h3>";
+    A1.innerHTML = "<h3><b>When current increases</b></h3>";
+    A2.innerHTML = "<h3><b>When current Decreases</b></h3>";
+    A3.innerHTML = "<h3><b>When current keeps varying</b></h3>";
+    A4.innerHTML = "<h3><b>All of the above</b></h3>";
 
+    CA.style.visibility = "hidden";
+    WA.style.visibility = "hidden";
+
+    inputF.checked = false;
+    inputF1.checked = false;
+    inputF2.checked = false;
+    inputF3.checked = false;
+
+    inputF.removeEventListener("click", correctA);
+    inputF1.removeEventListener("click", wrongA);
+    inputF2.removeEventListener("click", wrongA);
+    inputF3.removeEventListener("click", wrongA);
+    NextQuestionButton.removeEventListener("click", Q3);
+
+    inputF.addEventListener("click", wrongA);
+    inputF1.addEventListener("click", wrongA);
+    inputF2.addEventListener("click", wrongA);
+    inputF3.addEventListener("click", correctA);
+    NextQuestionButton.addEventListener("click", Q4);
 }
 function Q2() {
-    
+    Qq.innerHTML = "<h3><b>For higher value of current , the deflection of magnetic needle will - </b></h3>";
+    A1.innerHTML = "<h3><b>Increase</b></h3>";
+    A2.innerHTML = "<h3><b>Decrease</b></h3>";
+    A3.innerHTML = "<h3><b>Remain same as earlier</b></h3>";
+    A4.innerHTML = "<h3><b>No deflection </b></h3>";
+
+    CA.style.visibility = "hidden";
+    WA.style.visibility = "hidden";
+
+    inputF.checked = false;
+    inputF1.checked = false;
+    inputF2.checked = false;
+    inputF3.checked = false;
+
+    inputF.removeEventListener("click", wrongA);
+    inputF1.removeEventListener("click", correctA);
+    inputF2.removeEventListener("click", wrongA);
+    inputF3.removeEventListener("click", wrongA);
+    NextQuestionButton.removeEventListener("click", Q2);
+
+    inputF.addEventListener("click", correctA);
+    inputF1.addEventListener("click", wrongA);
+    inputF2.addEventListener("click", wrongA);
+    inputF3.addEventListener("click", wrongA);
+    NextQuestionButton.addEventListener("click", Q3);
 }
 function Q1() {
+    Qq.innerHTML = "<h3><b>The effect of electric current is utilized for detecting -</b></h3>";
+    A1.innerHTML = "<h3><b>Electric effect</b></h3>";
+    A2.innerHTML = "<h3><b>Magnetic effect</b></h3>";
+    A3.innerHTML = "<h3><b>Heating Effect</b></h3>";
+    A4.innerHTML = "<h3><b>none of these</b></h3>";
 
+    CA.style.visibility = "hidden";
+    WA.style.visibility = "hidden";
+
+    inputF.checked = false;
+    inputF1.checked = false;
+    inputF2.checked = false;
+    inputF3.checked = false;
+
+    inputF.removeEventListener("click", wrongA);
+    inputF1.removeEventListener("click", wrongA);
+    inputF2.removeEventListener("click", wrongA);
+    inputF3.removeEventListener("click", correctA);
+    NextQuestionButton.removeEventListener("click", Q1);
+
+    inputF.addEventListener("click", wrongA);
+    inputF1.addEventListener("click", correctA);
+    inputF2.addEventListener("click", wrongA);
+    inputF3.addEventListener("click", wrongA);
+    NextQuestionButton.addEventListener("click", Q2);
+}
+function myClick() {
+  setTimeout( function(){ document.getElementById("nextQuestion").click(); } , 1000);
 }
 function correctA() {
-    
+    score++;
+    CA.style.visibility = "visible";
+    WA.style.visibility = "hidden";
+    myClick();
 }
 function wrongA() {
-  
+    CA.style.visibility = "hidden";
+    WA.style.visibility = "visible";
+    myClick();
 }
 
 function loadExperimentElements()
@@ -292,9 +483,151 @@ function loadExperimentElements()
     var material;
 
     var bb7 = "font-family: Monospace; color: #000000; margin: 0px; overflow: hidden; ";
+    Qq = document.createElement("p"); Qq.style = bb7; document.body.appendChild(Qq);
+    Qq.innerHTML = "<h3><b>The effect of electric current is utilized for detecting the flow of current<br> in circuit using magnetic compass -</b></h3>";
+    Qq.style.position = "absolute";
+    Qq.style.left = 10 + '%';
+    Qq.style.top = 10 + '%';
+    Qq.style.visibility = "hidden";
+
     var q = "font-family: Monospace; color: #000000; margin: 0px; overflow: hidden; ";
     var SQBS = "font-family: Monospace; color: #ffffff; margin: 0px; overflow: hidden; font-size: 20px; padding: 8px 16px; border-radius: 8px;background-color: #555555;";
     button1 = document.createElement("button"); button1.setAttribute("id", "StartQuiz");
+    button1.style = SQBS;
+    button1.innerHTML = "StartQuiz"; document.body.appendChild(button1);
+    button1.style.position = "absolute";
+    button1.style.left = 45 + '%';
+    button1.style.top = 85 + '%';
+    button1.addEventListener("click", TesterQuiz);
+
+    var s = "font-family: Monospace; color: #000000;";
+    inputF = document.createElement("INPUT");
+    inputF.style = q;
+    inputF.style.position = "absolute";
+    inputF.style.left = 33 + '%';
+    inputF.style.top = 20 + '%';
+    inputF.setAttribute("type", "radio");
+    inputF.setAttribute("id", "q1");
+    inputF.setAttribute("name", "que");
+    inputF.setAttribute("value", "Answer");
+    inputF.addEventListener("click", wrongA);
+    //inputF.setAttribute('checked', false);
+    inputF.checked = false;
+    document.body.appendChild(inputF);
+    inputF.innerHTML = "Answer<br>";
+    inputF.style.visibility = "hidden";
+
+    inputF1 = document.createElement("INPUT");
+    inputF1.style = q;
+    inputF1.style.position = "absolute";
+    inputF1.style.left = 33 + '%';
+    inputF1.style.top = 26 + '%';
+    inputF1.setAttribute("type", "radio");
+    inputF1.setAttribute("id", "q2");
+    inputF1.setAttribute("name", "que");
+    inputF1.setAttribute("value", "Answe1r");
+    inputF1.addEventListener("click", correctA);
+    inputF1.checked = false;
+    document.body.appendChild(inputF1);
+    inputF1.innerHTML = "Answer1<br>";
+    inputF1.style.visibility = "hidden";
+    
+    inputF2 = document.createElement("INPUT");
+    inputF2.style = q;
+    inputF2.style.position = "absolute";
+    inputF2.style.left = 33 + '%';
+    inputF2.style.top = 32 + '%';
+    inputF2.setAttribute("type", "radio");
+    inputF2.setAttribute("id", "q3");
+    inputF2.setAttribute("name", "que");
+    inputF2.setAttribute("value", "Answer");
+    inputF2.addEventListener("click", wrongA);
+    inputF2.checked = false;
+    document.body.appendChild(inputF2);
+    inputF2.innerHTML = "Answer2<br>";
+    inputF2.style.visibility = "hidden";
+    
+    inputF3 = document.createElement("INPUT");
+    inputF3.style = q;
+    inputF3.style.position = "absolute";
+    inputF3.style.left = 33 + '%';
+    inputF3.style.top = 38 + '%';
+    inputF3.setAttribute("type", "radio");
+    inputF3.setAttribute("id", "q4");
+    inputF3.setAttribute("name", "que");
+    inputF3.setAttribute("value", "Answer");
+    inputF3.addEventListener("click", wrongA);
+    inputF3.checked = false;
+    document.body.appendChild(inputF3);
+    inputF3.innerHTML = "Answer3<br>";
+    inputF3.style.visibility = "hidden";
+
+    A1 = document.createElement("p"); A1.style = bb7; document.body.appendChild(A1);
+    A1.innerHTML = "<h3><b>Electric effect</b></h3>";
+    A1.style.position = "absolute";
+    A1.style.left = 39 + '%';
+    A1.style.top = 17.2 + '%';
+    A1.style.visibility = "hidden";
+
+    A2 = document.createElement("p"); A2.style = bb7; document.body.appendChild(A2);
+    A2.innerHTML = "<h3><b>Magnetic effect</b></h3>";
+    A2.style.position = "absolute";
+    A2.style.left = 39 + '%';
+    A2.style.top = 23.2 + '%';
+    A2.style.visibility = "hidden";
+
+    A3 = document.createElement("p"); A3.style = bb7; document.body.appendChild(A3);
+    A3.innerHTML = "<h3><b>Heating Effect</b></h3>";
+    A3.style.position = "absolute";
+    A3.style.left = 39 + '%';
+    A3.style.top = 29.2 + '%';
+    A3.style.visibility = "hidden";
+
+    A4 = document.createElement("p"); A4.style = bb7; document.body.appendChild(A4);
+    A4.innerHTML = "<h3><b>none of these</b></h3>";
+    A4.style.position = "absolute";
+    A4.style.left = 39 + '%';
+    A4.style.top = 35.2 + '%';
+    A4.style.visibility = "hidden";
+
+    var CAS = "font-family: Monospace; color: #59EE21; margin: 0px; overflow: hidden; ";
+    CA = document.createElement("p"); CA.style = CAS; document.body.appendChild(CA);
+    CA.innerHTML = "<h2><b>Correct</b></h2>";
+    CA.style.position = "absolute";
+    CA.style.left = 37 + '%';
+    CA.style.top = 41.2 + '%';
+    CA.style.visibility = "hidden";
+
+    var WAS = "font-family: Monospace; color: #ff0000; margin: 0px; overflow: hidden; ";
+    WA = document.createElement("p"); WA.style = WAS; document.body.appendChild(WA);
+    WA.innerHTML = "<h2><b>Wrong</b></h2>";
+    WA.style.position = "absolute";
+    WA.style.left = 37 + '%';
+    WA.style.top = 41.2 + '%';
+    WA.style.visibility = "hidden";
+
+    var NQB = "font-family: Monospace; color: #ffffff; margin: 0px; overflow: hidden; font-size: 20px; padding: 8px 22px;border-radius: 8px;background-color: #555555;";
+    NextQuestionButton = document.createElement("button");
+    NextQuestionButton.setAttribute("id", "nextQuestion");
+    NextQuestionButton.style = NQB;
+    NextQuestionButton.innerHTML = "Next Question"; document.body.appendChild(NextQuestionButton);
+    NextQuestionButton.style.position = "absolute";
+    NextQuestionButton.style.left = 37 + '%';
+    NextQuestionButton.style.top = 50 + '%';
+    NextQuestionButton.addEventListener("click", Q2);
+    NextQuestionButton.style.visibility = "hidden";
+
+    var EBS = "font-family: Monospace; color: #ffffff; margin: 0px; overflow: hidden; font-size: 20px; padding: 8px 16px; border-radius: 8px;background-color: #555555;";
+    ExperimentButton = document.createElement("button");
+    ExperimentButton.setAttribute("id", "StartEX");
+    ExperimentButton.style = EBS;
+    ExperimentButton.innerHTML = "Experiment"; document.body.appendChild(ExperimentButton);
+    ExperimentButton.style.position = "absolute";
+    ExperimentButton.style.left = 37 + '%';
+    ExperimentButton.style.top = 65 + '%';
+    ExperimentButton.addEventListener("click", StartEX);
+    ExperimentButton.style.visibility = "hidden";
+
 
     PIEsetExperimentTitle("A Magnetic Effect Tester");
     PIEsetDeveloperName("Siddharth Acharya");

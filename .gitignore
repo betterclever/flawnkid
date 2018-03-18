@@ -1,5 +1,7 @@
 /App/.idea
 /App/.gradle
+/App/build
+/App/app/build
 .gitignore
  .gradle/
  .idea/
