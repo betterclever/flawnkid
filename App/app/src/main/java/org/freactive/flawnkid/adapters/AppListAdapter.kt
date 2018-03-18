@@ -2,6 +2,7 @@ package org.freactive.flawnkid.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -56,6 +57,8 @@ class AppListAdapter(val context: Context, val appsList : ArrayList<AppDetail>) 
                         context.startActivity(i)
                     }
                 } else {
+                    //viewPager.currentItem = 3
+
                     Toast.makeText(context, "You're out of Pojos. Let's play some games to earn more!", Toast.LENGTH_SHORT).show()
                 }
             }

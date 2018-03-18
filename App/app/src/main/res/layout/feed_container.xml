@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text="Title"
             android:id="@+id/title"
-            android:textSize="25sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="16dp" />
@@ -40,14 +40,14 @@
                 android:text="Description"
                 android:id="@+id/description"
                 android:layout_marginTop="5dp"
-                android:textSize="20sp"/>
+                android:textSize="18sp"/>
 
         </LinearLayout>
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/feed_image"/>
+            android:id="@+id/feed_image" />
 
     </android.support.v7.widget.CardView>
 

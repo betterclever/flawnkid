@@ -1,15 +1,12 @@
 package org.freactive.flawnkid
 
-import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.view.View
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.freactive.flawnkid.adapters.FeedsAdapter
 import org.json.JSONObject
 
 
@@ -57,16 +54,3 @@ fun fetchLatestData(adapter: FeedsAdapter){
 
 
 }
-    /*doAsync {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-                .url("https://effervescence-17.firebaseio.com/notifications.json")
-                .build()
-        val response = client.newCall(request).execute()
-        try {
-            if (response.isSuccessful) {
-                val updatesList: ArrayList<Notification> = ArrayList()
-                val body = JSONObject(response.body()?.string())
-                val keys = body.keys()
-
-                while (keys.hasNext()) {*/

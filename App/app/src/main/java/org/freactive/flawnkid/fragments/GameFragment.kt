@@ -3,6 +3,7 @@ package org.freactive.flawnkid.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,9 @@ import kotlinx.android.synthetic.main.fragment_game.*
 import android.widget.Toast
 import android.webkit.WebView
 import android.webkit.WebChromeClient
+import kotlinx.android.synthetic.main.activity_home.*
 import org.freactive.flawnkid.R
+import java.util.*
 
 
 /**
@@ -44,6 +47,10 @@ class GameFragment : Fragment() {
             }
         }
 
-        webView.loadUrl("https://developer.android.com/")
+        val PREFS_KEY = "org.freactive.flawnkid.PREFS"
+
+        webView.settings.builtInZoomControls = true
+
+        webView.loadUrl("https://flawnkid-game2.surge.sh")
     }
 }

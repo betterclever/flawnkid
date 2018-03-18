@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.view_feed.*
-import org.freactive.flawnkid.FeedsAdapter
+import org.freactive.flawnkid.Feeds
+import org.freactive.flawnkid.adapters.FeedsAdapter
 import org.freactive.flawnkid.R
+import org.freactive.flawnkid.Source
 import org.freactive.flawnkid.fetchLatestData
 
 /**
@@ -28,6 +30,7 @@ class FeedsFragment: Fragment () {
         val adapter = FeedsAdapter(context)
         feed_recycler.layoutManager = LinearLayoutManager(activity, LinearLayout.VERTICAL, false)
         feed_recycler.adapter = adapter
+        feed_recycler.isNestedScrollingEnabled = false
 
         fetchLatestData(adapter)
 
