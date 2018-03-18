@@ -12,7 +12,7 @@ In the current society, almost every child, owns a mobile phone. The cureent sce
 * The game developers have the option to uplaod their games according to the interests of the parents. The game developers are awarded in the form of **ethereum coins**, depending on the user interaction and usability. In this way, the community also gets involved with the product.
 * There is an admin panel for the parents, which shows the interesest of their child by analysing the type of apps and the games in which he spends his most time on. In this way, the parents can analyse the interest of the child.
 
-## ScreenShots
+## Screenshots
 ![screenshot1](https://user-images.githubusercontent.com/24551629/37563552-32722690-2aa9-11e8-8480-564ce97bdca7.jpg)
 ![screenshot2](https://user-images.githubusercontent.com/24551629/37563555-46129b58-2aa9-11e8-90e7-45e1842aea4c.jpg)
 ![screenshot3](https://user-images.githubusercontent.com/24551629/37563558-58a4264c-2aa9-11e8-9499-0815f488bf27.jpg)
