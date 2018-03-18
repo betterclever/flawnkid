@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AppsListActivity"/>
+        <activity android:name=".GameActivity" />
     </application>
 
 </manifest>

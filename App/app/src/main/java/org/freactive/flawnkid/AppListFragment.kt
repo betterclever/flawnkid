@@ -1,6 +1,7 @@
 package org.freactive.flawnkid
 
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -8,10 +9,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_apps_list.*
 import java.util.*
 import kotlin.concurrent.schedule
@@ -24,6 +22,7 @@ class AppListFragment: Fragment() {
 
     private lateinit var manager: PackageManager
     private lateinit var apps: ArrayList<AppDetail>
+    private val PREFS_KEY = "org.freactive.flawnkid.PREFS"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.apps_list_fragment,container,false)
@@ -83,14 +82,28 @@ class AppListFragment: Fragment() {
 
     private fun addClickListener() {
         apps_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, pos, _ ->
-            val i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString())
-            activity.startActivityForResult(i,100)
+            val i = manager.getLaunchIntentForPackage(apps[pos].name.toString())
 
-            Timer("",false).schedule(5000) {
-                val i = Intent(Intent.ACTION_MAIN)
-                i.addCategory(Intent.CATEGORY_HOME)
-                startActivity(i)
+            val sharedPref = activity.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
+            val count = sharedPref.getInt(apps[pos].label.toString(),0)
+
+            if (count == 0) {
+                with (sharedPref.edit()) {
+                    putInt(apps[pos].label.toString(), 1)
+                    commit()
+                }
+                activity.startActivityForResult(i,100)
+
+                Timer("",false).schedule(5000) {
+                    val i = Intent(Intent.ACTION_MAIN)
+                    i.addCategory(Intent.CATEGORY_HOME)
+                    startActivity(i)
+                }
+            } else {
+                Toast.makeText(context, "You're out of Pojos. Let's play some games to earn more!", Toast.LENGTH_SHORT).show()
             }
+
+
         }
     }
 }
