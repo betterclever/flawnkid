@@ -1,4 +1,4 @@
-package org.freactive.flawnkid
+package org.freactive.flawnkid.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -11,10 +11,7 @@ import kotlinx.android.synthetic.main.fragment_game.*
 import android.widget.Toast
 import android.webkit.WebView
 import android.webkit.WebChromeClient
-import android.app.Activity
-import android.view.Window
-import android.view.Window.FEATURE_PROGRESS
-
+import org.freactive.flawnkid.R
 
 
 /**

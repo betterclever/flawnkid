@@ -1,16 +1,19 @@
-package org.freactive.flawnkid
-
+package org.freactive.flawnkid.fragments
 
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import kotlinx.android.synthetic.main.activity_apps_list.*
+import kotlinx.android.synthetic.main.apps_list_fragment.*
+import org.freactive.flawnkid.AppDetail
+import org.freactive.flawnkid.R
+import org.freactive.flawnkid.adapters.AppListAdapter
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -32,7 +35,7 @@ class AppListFragment: Fragment() {
 
         loadApps()
         loadListView()
-        addClickListener()
+        //addClickListener()
     }
 
     private fun loadApps() {
@@ -54,7 +57,7 @@ class AppListFragment: Fragment() {
 
     private fun loadListView() {
 
-        val adapter = object : ArrayAdapter<AppDetail>(activity,
+        /*val adapter = object : ArrayAdapter<AppDetail>(activity,
                 R.layout.list_item,
                 apps) {
 
@@ -75,13 +78,13 @@ class AppListFragment: Fragment() {
 
                 return convertView
             }
-        }
-
-        apps_list.adapter = adapter
+        }*/
+        appsList.layoutManager = GridLayoutManager(context,4,GridLayoutManager.VERTICAL,false)
+        appsList.adapter = AppListAdapter(context, apps)
     }
 
-    private fun addClickListener() {
-        apps_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, pos, _ ->
+    /*private fun addClickListener() {
+        appsList.onItemClickListener = AdapterView.OnItemClickListener { _, _, pos, _ ->
             val i = manager.getLaunchIntentForPackage(apps[pos].name.toString())
 
             val sharedPref = activity.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
@@ -105,5 +108,5 @@ class AppListFragment: Fragment() {
 
 
         }
-    }
+    }*/
 }

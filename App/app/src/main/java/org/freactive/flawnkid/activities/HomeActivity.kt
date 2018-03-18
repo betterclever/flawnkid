@@ -1,12 +1,10 @@
-package org.freactive.flawnkid
+package org.freactive.flawnkid.activities
 
-import android.app.Activity
 import android.os.Bundle
-import android.content.Intent
-import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import kotlinx.android.synthetic.main.activity_home.*
+import org.freactive.flawnkid.adapters.HomePagerAdapter
+import org.freactive.flawnkid.R
 
 
 class HomeActivity : AppCompatActivity() {

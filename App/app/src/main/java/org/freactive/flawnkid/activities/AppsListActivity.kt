@@ -1,18 +1,16 @@
-package org.freactive.flawnkid
+/*
+package org.freactive.flawnkid.activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.content.pm.ResolveInfo
 import android.content.Intent
-import android.R.attr.name
-import android.R.attr.label
 import android.view.ViewGroup
-import android.R.attr.name
 import android.app.Activity
 import android.view.View
 import kotlinx.android.synthetic.main.activity_apps_list.*
 import android.content.pm.PackageManager
 import android.widget.*
+import org.freactive.flawnkid.AppDetail
+import org.freactive.flawnkid.R
 
 
 class AppsListActivity : Activity() {
@@ -82,3 +80,4 @@ class AppsListActivity : Activity() {
         }
     }
 }
+*/

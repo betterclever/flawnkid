@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".HomeActivity"
+            android:name=".activities.HomeActivity"
             android:clearTaskOnLaunch="true"
             android:label="Flawnkid"
             android:stateNotNeeded="true">
@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AppsListActivity"/>
+        <activity android:name=".activities.AppsListActivity"/>
         <activity android:name=".GameActivity" />
     </application>
 
