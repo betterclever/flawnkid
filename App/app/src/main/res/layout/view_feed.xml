@@ -6,23 +6,28 @@
     android:layout_height="match_parent">
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="#ffffff"
             app:cardCornerRadius="10dp">
-+
+            +
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="John"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
+                android:text="John"
                 android:textColor="@android:color/black"
                 android:textSize="23sp"
                 android:textStyle="bold" />
@@ -30,19 +35,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="App Usage"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginTop="30dp"
+                android:text="App Usage"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="62dp"
                 android:text="Educational Apps"
-                android:layout_marginLeft="5dp"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
 
@@ -50,10 +55,10 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 android:layout_marginTop="85dp"
                 android:progress="25"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"
                 android:progressBackgroundTint="#b50a0a"
                 android:progressTint="#b50a0a"
                 android:scaleY="2" />
@@ -61,10 +66,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
-                android:text="General Apps"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginTop="100dp"
+                android:text="General Apps"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
 
@@ -72,10 +77,10 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 android:layout_marginTop="115dp"
                 android:progress="25"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"
                 android:progressBackgroundTint="#0f9900"
                 android:progressTint="#0f9900"
                 android:scaleY="2" />
@@ -83,8 +88,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="145dp"
                 android:layout_marginLeft="5dp"
+                android:layout_marginTop="145dp"
                 android:text="Points"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
@@ -92,20 +97,19 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="170dp"
                 android:text="Educational Games"
-                android:layout_marginLeft="5dp"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
-
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="215dp"
                 android:text="General Games"
-                android:layout_marginLeft="5dp"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
 
@@ -113,10 +117,10 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 android:layout_marginTop="185dp"
                 android:progress="25"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"
                 android:progressBackgroundTint="#f2baba"
                 android:progressTint="#f2baba"
                 android:scaleY="2" />
@@ -125,10 +129,10 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 android:layout_marginTop="230dp"
                 android:progress="25"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"
                 android:progressBackgroundTint="#a1c991"
                 android:progressTint="#a1c991"
                 android:scaleY="2" />
@@ -137,14 +141,37 @@
                 android:id="@+id/imageView"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginLeft="260dp"
-                android:src="@drawable/registered"
-                android:scaleType="centerCrop"/>
+                android:layout_marginTop="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/registered" />
 
 
         </android.support.v7.widget.CardView>
 
     </ScrollView>
+
+    <!--<android.support.v7.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2">-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/feed_recycler"
+        android:layout_width="0dp"
+        android:layout_height="271dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
+    <!--</android.support.v7.widget.CardView>-->
 
 </android.support.constraint.ConstraintLayout>

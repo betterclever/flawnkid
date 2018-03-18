@@ -15,5 +15,4 @@ class HomePagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm) {
     }
 
     override fun getCount(): Int = 2
-
 }
