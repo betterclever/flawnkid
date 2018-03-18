@@ -4,11 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/apps_list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/appsList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-    </ListView>
+        android:layout_height="match_parent" />
 
 </LinearLayout>
